@@ -1,0 +1,226 @@
+"use server";
+
+import { z } from "zod";
+import { prisma } from "@/lib/db";
+import { revalidatePath } from "next/cache";
+import { JobStatus } from "@prisma/client";
+
+const locationSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  area: z.string().optional(),
+  parentId: z.string().optional(),
+});
+
+const jobSchema = z.object({
+  locationId: z.string().min(1, "Location is required"),
+  status: z.nativeEnum(JobStatus).optional(),
+  rValue: z.coerce.number().int().positive().optional().nullable(),
+  bags: z.coerce.number().int().nonnegative().optional().nullable(),
+  sqft: z.coerce.number().int().positive().optional().nullable(),
+});
+
+export type ActionResult = {
+  success: boolean;
+  error?: string;
+};
+
+// Location actions
+export async function createLocation(formData: FormData): Promise<ActionResult> {
+  const rawData = {
+    name: formData.get("name"),
+    area: formData.get("area") || undefined,
+    parentId: formData.get("parentId") || undefined,
+  };
+
+  const parsed = locationSchema.safeParse(rawData);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0].message };
+  }
+
+  try {
+    await prisma.location.create({
+      data: {
+        name: parsed.data.name,
+        area: parsed.data.area || null,
+        parentId: parsed.data.parentId || null,
+      },
+    });
+    revalidatePath("/jobs");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Failed to create location" };
+  }
+}
+
+export async function renameLocation(
+  id: string,
+  name: string
+): Promise<ActionResult> {
+  if (!name.trim()) {
+    return { success: false, error: "Name is required" };
+  }
+
+  try {
+    await prisma.location.update({
+      where: { id },
+      data: { name: name.trim() },
+    });
+    revalidatePath("/jobs");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Failed to rename location" };
+  }
+}
+
+export async function updateLocation(
+  id: string,
+  data: { name: string; area?: string | null }
+): Promise<ActionResult> {
+  if (!data.name.trim()) {
+    return { success: false, error: "Name is required" };
+  }
+
+  try {
+    await prisma.location.update({
+      where: { id },
+      data: {
+        name: data.name.trim(),
+        area: data.area?.trim() || null,
+      },
+    });
+    revalidatePath("/jobs");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Failed to update location" };
+  }
+}
+
+export async function deleteLocation(id: string): Promise<ActionResult> {
+  try {
+    const location = await prisma.location.findUnique({
+      where: { id },
+      include: { children: true, jobs: true },
+    });
+
+    if (!location) {
+      return { success: false, error: "Location not found" };
+    }
+
+    if (location.children.length > 0) {
+      return { success: false, error: "Cannot delete location with sub-locations" };
+    }
+
+    if (location.jobs.length > 0) {
+      return { success: false, error: "Cannot delete location with jobs" };
+    }
+
+    await prisma.location.delete({ where: { id } });
+    revalidatePath("/jobs");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Failed to delete location" };
+  }
+}
+
+// Job actions
+export async function createJob(
+  locationId: string,
+  data?: {
+    status?: JobStatus;
+    rValue?: number | null;
+    bags?: number | null;
+    sqft?: number | null;
+  }
+): Promise<ActionResult> {
+  try {
+    const status = data?.status || "READY";
+    await prisma.job.create({
+      data: {
+        locationId,
+        status,
+        rValue: data?.rValue,
+        bags: data?.bags,
+        sqft: data?.sqft,
+        completedAt: status === "COMPLETE" ? new Date() : null,
+      },
+    });
+    revalidatePath("/jobs");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Failed to create job" };
+  }
+}
+
+export async function updateJob(
+  id: number,
+  formData: FormData
+): Promise<ActionResult> {
+  const statusValue = formData.get("status");
+  console.log("updateJob called with status:", statusValue);
+
+  const rawData = {
+    locationId: formData.get("locationId") as string,
+    status: statusValue ? (statusValue as JobStatus) : undefined,
+    rValue: formData.get("rValue") || null,
+    bags: formData.get("bags") || null,
+    sqft: formData.get("sqft") || null,
+  };
+
+  const parsed = jobSchema.safeParse(rawData);
+  if (!parsed.success) {
+    console.log("Zod parse failed:", parsed.error.issues);
+    return { success: false, error: parsed.error.issues[0].message };
+  }
+
+  console.log("Parsed status:", parsed.data.status);
+
+  try {
+    // Get current job to check if status is changing to COMPLETE
+    const currentJob = await prisma.job.findUnique({ where: { id } });
+    const isNewlyCompleted = parsed.data.status === "COMPLETE" && currentJob?.status !== "COMPLETE";
+
+    await prisma.job.update({
+      where: { id },
+      data: {
+        status: parsed.data.status,
+        rValue: parsed.data.rValue,
+        bags: parsed.data.bags,
+        sqft: parsed.data.sqft,
+        completedAt: isNewlyCompleted ? new Date() : undefined,
+      },
+    });
+    revalidatePath("/jobs");
+    revalidatePath(`/jobs/${id}`);
+    return { success: true };
+  } catch (error) {
+    console.error("Prisma update error:", error);
+    return { success: false, error: "Failed to update job" };
+  }
+}
+
+export async function updateJobStatus(
+  id: number,
+  status: JobStatus
+): Promise<ActionResult> {
+  try {
+    await prisma.job.update({
+      where: { id },
+      data: { status },
+    });
+    revalidatePath("/jobs");
+    revalidatePath(`/jobs/${id}`);
+    return { success: true };
+  } catch {
+    return { success: false, error: "Failed to update job status" };
+  }
+}
+
+export async function deleteJob(id: number): Promise<ActionResult> {
+  try {
+    await prisma.job.delete({ where: { id } });
+    revalidatePath("/jobs");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Failed to delete job" };
+  }
+}
