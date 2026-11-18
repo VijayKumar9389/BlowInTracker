@@ -17,36 +17,36 @@ export function SummaryRow({ jobs }: SummaryRowProps) {
   const bagsPerHundredSqft = sqftWithBags > 0 ? ((bagsWithSqft / sqftWithBags) * 100).toFixed(1) : null;
 
   return (
-    <div className="grid grid-cols-5 gap-4 mb-6">
-      <div className="bg-surface rounded-xl p-4 text-center">
-        <div className="text-3xl font-semibold text-ready tabular-nums">
+    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-4 mb-6">
+      <div className="bg-surface rounded-xl p-3 sm:p-4 text-center">
+        <div className="text-2xl sm:text-3xl font-semibold text-ready tabular-nums">
           {readyJobs || "—"}
         </div>
         <div className="text-xs text-muted mt-1 uppercase tracking-wide">Ready</div>
       </div>
-      <div className="bg-surface rounded-xl p-4 text-center">
-        <div className="text-3xl font-semibold text-complete tabular-nums">
+      <div className="bg-surface rounded-xl p-3 sm:p-4 text-center">
+        <div className="text-2xl sm:text-3xl font-semibold text-complete tabular-nums">
           {completeJobs || "—"}
         </div>
         <div className="text-xs text-muted mt-1 uppercase tracking-wide">Complete</div>
       </div>
-      <div className="bg-surface rounded-xl p-4 text-center">
-        <div className="text-3xl font-semibold text-ink tabular-nums">
+      <div className="bg-surface rounded-xl p-3 sm:p-4 text-center">
+        <div className="text-2xl sm:text-3xl font-semibold text-ink tabular-nums">
           {totalBags > 0 ? totalBags.toLocaleString() : "—"}
         </div>
         <div className="text-xs text-muted mt-1 uppercase tracking-wide">Bags</div>
       </div>
-      <div className="bg-surface rounded-xl p-4 text-center">
-        <div className="text-3xl font-semibold text-ink tabular-nums">
+      <div className="bg-surface rounded-xl p-3 sm:p-4 text-center">
+        <div className="text-2xl sm:text-3xl font-semibold text-ink tabular-nums">
           {totalSqft > 0 ? totalSqft.toLocaleString() : "—"}
         </div>
         <div className="text-xs text-muted mt-1 uppercase tracking-wide">Sqft</div>
       </div>
-      <div className="bg-surface rounded-xl p-4 text-center">
-        <div className="text-3xl font-semibold text-ink tabular-nums">
+      <div className="bg-surface rounded-xl p-3 sm:p-4 text-center">
+        <div className="text-2xl sm:text-3xl font-semibold text-ink tabular-nums">
           {bagsPerHundredSqft || "—"}
         </div>
-        <div className="text-xs text-muted mt-1 uppercase tracking-wide">Bags/100sqft</div>
+        <div className="text-xs text-muted mt-1 uppercase tracking-wide whitespace-nowrap">Bags/100sqft</div>
       </div>
     </div>
   );
