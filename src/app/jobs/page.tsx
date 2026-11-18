@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/db";
 import { JobsPageClient } from "./client";
-import type { LocationWithRelations, FilterType } from "@/lib/types";
+import type { FolderWithRelations, FilterType } from "@/lib/types";
 import type { Job } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
-async function getLocationsWithJobs(): Promise<LocationWithRelations[]> {
-  const locations = await prisma.location.findMany({
+async function getFoldersWithJobs(): Promise<FolderWithRelations[]> {
+  const folders = await prisma.folder.findMany({
     where: { parentId: null },
     include: {
       jobs: true,
@@ -32,42 +32,42 @@ async function getLocationsWithJobs(): Promise<LocationWithRelations[]> {
     orderBy: { createdAt: "asc" },
   });
 
-  return locations as LocationWithRelations[];
+  return folders as FolderWithRelations[];
 }
 
-function getAllJobs(locations: LocationWithRelations[]): Job[] {
+function getAllJobs(folders: FolderWithRelations[]): Job[] {
   const jobs: Job[] = [];
 
-  function collect(loc: LocationWithRelations) {
-    jobs.push(...loc.jobs);
-    loc.children.forEach(collect);
+  function collect(folder: FolderWithRelations) {
+    jobs.push(...folder.jobs);
+    folder.children.forEach(collect);
   }
 
-  locations.forEach(collect);
+  folders.forEach(collect);
   return jobs;
 }
 
-function countLocations(locations: LocationWithRelations[]): Record<FilterType, number> {
+function countJobs(folders: FolderWithRelations[]): Record<FilterType, number> {
   let todo = 0;
   let complete = 0;
   let all = 0;
 
-  function count(loc: LocationWithRelations) {
-    // Only count leaf locations (no children)
-    if (loc.children.length === 0) {
+  function count(folder: FolderWithRelations) {
+    // Count all jobs in this folder
+    for (const job of folder.jobs) {
       all++;
-      const job = loc.jobs[0];
-      if (job?.status === "READY" || job?.status === "IN_PROGRESS") {
+      if (job.status === "READY" || job.status === "IN_PROGRESS") {
         todo++;
       }
-      if (job?.status === "COMPLETE") {
+      if (job.status === "COMPLETE") {
         complete++;
       }
     }
-    loc.children.forEach(count);
+    // Recurse into children
+    folder.children.forEach(count);
   }
 
-  locations.forEach(count);
+  folders.forEach(count);
   return { todo, complete, all };
 }
 
@@ -81,14 +81,14 @@ function getLastRValue(jobs: Job[]): number | null {
 }
 
 export default async function JobsPage() {
-  const locations = await getLocationsWithJobs();
-  const jobs = getAllJobs(locations);
-  const counts = countLocations(locations);
+  const folders = await getFoldersWithJobs();
+  const jobs = getAllJobs(folders);
+  const counts = countJobs(folders);
   const lastRValue = getLastRValue(jobs);
 
   return (
     <JobsPageClient
-      locations={locations}
+      folders={folders}
       jobs={jobs}
       counts={counts}
       lastRValue={lastRValue}

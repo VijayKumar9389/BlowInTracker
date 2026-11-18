@@ -5,14 +5,15 @@ import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { JobStatus } from "@prisma/client";
 
-const locationSchema = z.object({
+const folderSchema = z.object({
   name: z.string().min(1, "Name is required"),
   area: z.string().optional(),
   parentId: z.string().optional(),
 });
 
 const jobSchema = z.object({
-  locationId: z.string().min(1, "Location is required"),
+  name: z.string().min(1, "Name is required").optional(),
+  folderId: z.string().min(1, "Folder is required"),
   status: z.nativeEnum(JobStatus).optional(),
   rValue: z.coerce.number().int().positive().optional().nullable(),
   bags: z.coerce.number().int().nonnegative().optional().nullable(),
@@ -24,21 +25,21 @@ export type ActionResult = {
   error?: string;
 };
 
-// Location actions
-export async function createLocation(formData: FormData): Promise<ActionResult> {
+// Folder actions
+export async function createFolder(formData: FormData): Promise<ActionResult> {
   const rawData = {
     name: formData.get("name"),
     area: formData.get("area") || undefined,
     parentId: formData.get("parentId") || undefined,
   };
 
-  const parsed = locationSchema.safeParse(rawData);
+  const parsed = folderSchema.safeParse(rawData);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0].message };
   }
 
   try {
-    await prisma.location.create({
+    await prisma.folder.create({
       data: {
         name: parsed.data.name,
         area: parsed.data.area || null,
@@ -48,11 +49,11 @@ export async function createLocation(formData: FormData): Promise<ActionResult> 
     revalidatePath("/jobs");
     return { success: true };
   } catch {
-    return { success: false, error: "Failed to create location" };
+    return { success: false, error: "Failed to create folder" };
   }
 }
 
-export async function renameLocation(
+export async function renameFolder(
   id: string,
   name: string
 ): Promise<ActionResult> {
@@ -61,18 +62,18 @@ export async function renameLocation(
   }
 
   try {
-    await prisma.location.update({
+    await prisma.folder.update({
       where: { id },
       data: { name: name.trim() },
     });
     revalidatePath("/jobs");
     return { success: true };
   } catch {
-    return { success: false, error: "Failed to rename location" };
+    return { success: false, error: "Failed to rename folder" };
   }
 }
 
-export async function updateLocation(
+export async function updateFolder(
   id: string,
   data: { name: string; area?: string | null }
 ): Promise<ActionResult> {
@@ -81,7 +82,7 @@ export async function updateLocation(
   }
 
   try {
-    await prisma.location.update({
+    await prisma.folder.update({
       where: { id },
       data: {
         name: data.name.trim(),
@@ -91,56 +92,62 @@ export async function updateLocation(
     revalidatePath("/jobs");
     return { success: true };
   } catch {
-    return { success: false, error: "Failed to update location" };
+    return { success: false, error: "Failed to update folder" };
   }
 }
 
-export async function deleteLocation(id: string): Promise<ActionResult> {
+export async function deleteFolder(id: string): Promise<ActionResult> {
   try {
-    const location = await prisma.location.findUnique({
+    const folder = await prisma.folder.findUnique({
       where: { id },
       include: { children: true, jobs: true },
     });
 
-    if (!location) {
-      return { success: false, error: "Location not found" };
+    if (!folder) {
+      return { success: false, error: "Folder not found" };
     }
 
-    if (location.children.length > 0) {
-      return { success: false, error: "Cannot delete location with sub-locations" };
+    if (folder.children.length > 0) {
+      return { success: false, error: "Cannot delete folder with sub-folders" };
     }
 
-    if (location.jobs.length > 0) {
-      return { success: false, error: "Cannot delete location with jobs" };
+    if (folder.jobs.length > 0) {
+      return { success: false, error: "Cannot delete folder with jobs" };
     }
 
-    await prisma.location.delete({ where: { id } });
+    await prisma.folder.delete({ where: { id } });
     revalidatePath("/jobs");
     return { success: true };
   } catch {
-    return { success: false, error: "Failed to delete location" };
+    return { success: false, error: "Failed to delete folder" };
   }
 }
 
 // Job actions
 export async function createJob(
-  locationId: string,
-  data?: {
+  folderId: string,
+  data: {
+    name: string;
     status?: JobStatus;
     rValue?: number | null;
     bags?: number | null;
     sqft?: number | null;
   }
 ): Promise<ActionResult> {
+  if (!data.name?.trim()) {
+    return { success: false, error: "Name is required" };
+  }
+
   try {
-    const status = data?.status || "READY";
+    const status = data.status || "READY";
     await prisma.job.create({
       data: {
-        locationId,
+        name: data.name.trim(),
+        folderId,
         status,
-        rValue: data?.rValue,
-        bags: data?.bags,
-        sqft: data?.sqft,
+        rValue: data.rValue,
+        bags: data.bags,
+        sqft: data.sqft,
         completedAt: status === "COMPLETE" ? new Date() : null,
       },
     });
@@ -156,10 +163,12 @@ export async function updateJob(
   formData: FormData
 ): Promise<ActionResult> {
   const statusValue = formData.get("status");
+  const nameValue = formData.get("name");
   console.log("updateJob called with status:", statusValue);
 
   const rawData = {
-    locationId: formData.get("locationId") as string,
+    name: nameValue ? (nameValue as string) : undefined,
+    folderId: formData.get("folderId") as string,
     status: statusValue ? (statusValue as JobStatus) : undefined,
     rValue: formData.get("rValue") || null,
     bags: formData.get("bags") || null,
@@ -182,6 +191,7 @@ export async function updateJob(
     await prisma.job.update({
       where: { id },
       data: {
+        name: parsed.data.name,
         status: parsed.data.status,
         rValue: parsed.data.rValue,
         bags: parsed.data.bags,
@@ -195,6 +205,27 @@ export async function updateJob(
   } catch (error) {
     console.error("Prisma update error:", error);
     return { success: false, error: "Failed to update job" };
+  }
+}
+
+export async function updateJobName(
+  id: number,
+  name: string
+): Promise<ActionResult> {
+  if (!name.trim()) {
+    return { success: false, error: "Name is required" };
+  }
+
+  try {
+    await prisma.job.update({
+      where: { id },
+      data: { name: name.trim() },
+    });
+    revalidatePath("/jobs");
+    revalidatePath(`/jobs/${id}`);
+    return { success: true };
+  } catch {
+    return { success: false, error: "Failed to update job name" };
   }
 }
 

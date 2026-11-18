@@ -16,13 +16,13 @@ model User {
   updatedAt    DateTime @updatedAt
 }
 
-model Location {
+model Folder {
   id        String     @id @default(cuid())
   name      String
   area      String?    // "Main attic", "Garage"
   parentId  String?
-  parent    Location?  @relation("LocationTree", fields: [parentId], references: [id])
-  children  Location[] @relation("LocationTree")
+  parent    Folder?    @relation("FolderTree", fields: [parentId], references: [id])
+  children  Folder[]   @relation("FolderTree")
   jobs      Job[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -32,8 +32,9 @@ model Location {
 
 model Job {
   id          Int       @id @default(autoincrement())
-  locationId  String
-  location    Location  @relation(fields: [locationId], references: [id])
+  name        String
+  folderId    String
+  folder      Folder    @relation(fields: [folderId], references: [id])
   status      JobStatus @default(READY)
   rValue      Int?
   bags        Int?
@@ -42,7 +43,7 @@ model Job {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  @@index([locationId])
+  @@index([folderId])
 }
 
 enum JobStatus {

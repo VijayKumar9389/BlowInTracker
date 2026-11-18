@@ -1,9 +1,9 @@
-import type { Job, Location, JobStatus } from "@prisma/client";
+import type { Job, Folder, JobStatus } from "@prisma/client";
 
-export type { Job, Location, JobStatus };
+export type { Job, Folder, JobStatus };
 
-export type LocationWithRelations = Location & {
-  children: LocationWithRelations[];
+export type FolderWithRelations = Folder & {
+  children: FolderWithRelations[];
   jobs: Job[];
 };
 

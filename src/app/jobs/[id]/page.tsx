@@ -20,7 +20,7 @@ export default async function JobDetailPage({ params }: Props) {
 
   const job = await prisma.job.findUnique({
     where: { id: jobId },
-    include: { location: true },
+    include: { folder: true },
   });
 
   if (!job) {
@@ -55,11 +55,11 @@ export default async function JobDetailPage({ params }: Props) {
 
         <div className="mb-6">
           <h1 className="text-2xl font-semibold text-ink mb-1">
-            {job.location.name}
+            {job.name}
           </h1>
-          {job.location.area && (
-            <p className="text-muted">{job.location.area}</p>
-          )}
+          <p className="text-muted">
+            {job.folder.name}{job.folder.area ? ` · ${job.folder.area}` : ""}
+          </p>
         </div>
 
         <div className="mb-8">

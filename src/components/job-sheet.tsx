@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useRef, useTransition } from "react";
 import { JobStatus } from "@prisma/client";
-import type { Job, Location } from "@prisma/client";
+import type { Job, Folder } from "@prisma/client";
 import { updateJob, createJob } from "@/app/jobs/actions";
 
 type JobSheetProps = {
   open: boolean;
   onClose: () => void;
-  location: Location;
+  folder: Folder;
   job?: Job | null;
   mode?: "edit" | "complete";
   lastRValue?: number | null;
@@ -17,7 +17,7 @@ type JobSheetProps = {
 export function JobSheet({
   open,
   onClose,
-  location,
+  folder,
   job,
   mode = "edit",
   lastRValue,
@@ -28,6 +28,7 @@ export function JobSheet({
   const [isMobile, setIsMobile] = useState(false);
 
   // Form state
+  const [name, setName] = useState(job?.name || "");
   const [status, setStatus] = useState<JobStatus>(job?.status || "READY");
   const defaultRValue = job?.rValue || lastRValue || null;
   const [rValue, setRValue] = useState<number | "other" | null>(
@@ -52,6 +53,7 @@ export function JobSheet({
   useEffect(() => {
     if (open) {
       const defaultR = job?.rValue || lastRValue || null;
+      setName(job?.name || "");
       setStatus(job?.status || "READY");
       setRValue(defaultR ? ([40, 50, 60].includes(defaultR) ? defaultR : "other") : null);
       setCustomRValue(defaultR && ![40, 50, 60].includes(defaultR) ? defaultR.toString() : "");
@@ -90,13 +92,19 @@ export function JobSheet({
   };
 
   const handleSave = (saveAsComplete: boolean = false) => {
+    if (!name.trim()) {
+      alert("Job name is required");
+      return;
+    }
+
     startTransition(async () => {
       const finalRValue = getFinalRValue();
       const finalStatus = saveAsComplete ? "COMPLETE" : status;
 
       if (job) {
         const formData = new FormData();
-        formData.set("locationId", location.id);
+        formData.set("name", name.trim());
+        formData.set("folderId", folder.id);
         formData.set("status", finalStatus);
         if (finalRValue) formData.set("rValue", finalRValue.toString());
         formData.set("bags", bags.toString());
@@ -110,7 +118,8 @@ export function JobSheet({
           alert(result.error || "Failed to update job");
         }
       } else {
-        const result = await createJob(location.id, {
+        const result = await createJob(folder.id, {
+          name: name.trim(),
           status: finalStatus,
           rValue: finalRValue,
           bags: bags || null,
@@ -134,8 +143,8 @@ export function JobSheet({
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-ink">{location.name}</h2>
-          {location.area && <p className="text-muted mt-0.5">{location.area}</p>}
+          <h2 className="text-xl font-semibold text-ink">{job ? job.name : "New Job"}</h2>
+          <p className="text-muted mt-0.5">{folder.name}{folder.area ? ` · ${folder.area}` : ""}</p>
         </div>
         <button
           type="button"
@@ -147,6 +156,18 @@ export function JobSheet({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
+      </div>
+
+      {/* Job Name */}
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-ink mb-1.5">Job name</label>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="e.g. Unit 101, Main Attic"
+          className="w-full h-11 px-4 bg-surface border border-line rounded-xl text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-ink focus:ring-offset-1"
+        />
       </div>
 
       {/* Status - only in edit mode */}

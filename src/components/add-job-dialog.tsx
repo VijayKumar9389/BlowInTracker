@@ -1,31 +1,29 @@
 "use client";
 
 import { useState, useEffect, useRef, useTransition } from "react";
-import type { Location } from "@prisma/client";
-import { updateLocation } from "@/app/jobs/actions";
+import type { Folder } from "@prisma/client";
+import { createJob } from "@/app/jobs/actions";
 
-type EditLocationDialogProps = {
+type AddJobDialogProps = {
   open: boolean;
   onClose: () => void;
-  location: Location;
+  folder: Folder;
 };
 
-export function EditLocationDialog({ open, onClose, location }: EditLocationDialogProps) {
+export function AddJobDialog({ open, onClose, folder }: AddJobDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const [name, setName] = useState(location.name);
-  const [area, setArea] = useState(location.area || "");
+  const [name, setName] = useState("");
 
   useEffect(() => {
     if (open) {
-      setName(location.name);
-      setArea(location.area || "");
+      setName("");
       setError(null);
     }
-  }, [open, location]);
+  }, [open]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -57,16 +55,21 @@ export function EditLocationDialog({ open, onClose, location }: EditLocationDial
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!name.trim()) {
+      setError("Name is required");
+      return;
+    }
+
     startTransition(async () => {
-      const result = await updateLocation(location.id, {
-        name,
-        area: area || null,
+      const result = await createJob(folder.id, {
+        name: name.trim(),
+        status: "READY",
       });
 
       if (result.success) {
         onClose();
       } else {
-        setError(result.error || "Failed to update location");
+        setError(result.error || "Failed to create job");
       }
     });
   };
@@ -84,7 +87,10 @@ export function EditLocationDialog({ open, onClose, location }: EditLocationDial
     >
       <form onSubmit={handleSubmit} className="p-6">
         <div className="flex items-start justify-between mb-6">
-          <h2 className="text-xl font-semibold text-ink">Edit location</h2>
+          <div>
+            <h2 className="text-xl font-semibold text-ink">Add job</h2>
+            <p className="text-sm text-muted mt-0.5">in {folder.name}</p>
+          </div>
           <button
             type="button"
             onClick={onClose}
@@ -99,30 +105,16 @@ export function EditLocationDialog({ open, onClose, location }: EditLocationDial
 
         <div className="space-y-4">
           <div>
-            <label htmlFor="edit-name" className="block text-sm font-medium text-ink mb-1.5">
-              Name
+            <label htmlFor="job-name" className="block text-sm font-medium text-ink mb-1.5">
+              Job name
             </label>
             <input
-              id="edit-name"
+              id="job-name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Unit 101, Main Attic"
               autoFocus
-              className="w-full h-11 px-4 bg-surface border border-line rounded-xl text-ink focus:outline-none focus:ring-2 focus:ring-ink focus:ring-offset-1"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="edit-area" className="block text-sm text-ink mb-1.5">
-              <span className="font-medium">Area</span>
-              <span className="text-muted"> · optional</span>
-            </label>
-            <input
-              id="edit-area"
-              type="text"
-              value={area}
-              onChange={(e) => setArea(e.target.value)}
-              placeholder="e.g. Main attic, Garage"
               className="w-full h-11 px-4 bg-surface border border-line rounded-xl text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-ink focus:ring-offset-1"
             />
           </div>
@@ -140,7 +132,7 @@ export function EditLocationDialog({ open, onClose, location }: EditLocationDial
             disabled={!name.trim() || isPending}
             className="flex-1 h-11 bg-ink text-white rounded-full font-medium disabled:opacity-50 hover:bg-ink/90 transition-opacity"
           >
-            {isPending ? "Saving..." : "Save"}
+            {isPending ? "Creating..." : "Add job"}
           </button>
           <button
             type="button"

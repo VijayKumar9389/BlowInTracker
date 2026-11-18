@@ -9,26 +9,26 @@ type FilterTabsProps = {
 };
 
 const filters: { value: FilterType; label: string }[] = [
-  { value: "all", label: "All" },
   { value: "todo", label: "To do" },
   { value: "complete", label: "Complete" },
+  { value: "all", label: "All" },
 ];
 
 export function FilterTabs({ value, onChange, counts }: FilterTabsProps) {
   return (
-    <div className="flex gap-2">
+    <div className="inline-flex bg-surface rounded-full p-1">
       {filters.map((filter) => (
         <button
           key={filter.value}
           onClick={() => onChange(filter.value)}
-          className={`min-h-11 px-4 rounded-full text-sm font-medium transition-colors ${
+          className={`h-9 px-4 rounded-full text-sm font-medium transition-all ${
             value === filter.value
-              ? "bg-ink text-white"
-              : "bg-surface text-muted hover:bg-line hover:text-ink"
+              ? "bg-white text-ink shadow-sm"
+              : "text-muted hover:text-ink"
           }`}
         >
           {filter.label}
-          <span className="ml-1.5 opacity-70">{counts[filter.value]}</span>
+          <span className="ml-1.5 tabular-nums opacity-60">{counts[filter.value]}</span>
         </button>
       ))}
     </div>

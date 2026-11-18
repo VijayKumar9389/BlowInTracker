@@ -23,6 +23,7 @@ export function EditJobForm({ job }: EditJobFormProps) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
+  const [name, setName] = useState<string>(job.name);
   const [status, setStatus] = useState<JobStatus>(job.status);
   const [rValue, setRValue] = useState<string>(job.rValue?.toString() || "");
   const [bags, setBags] = useState<number>(job.bags || 0);
@@ -31,9 +32,15 @@ export function EditJobForm({ job }: EditJobFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!name.trim()) {
+      setError("Job name is required");
+      return;
+    }
+
     startTransition(async () => {
       const formData = new FormData();
-      formData.set("locationId", job.locationId);
+      formData.set("name", name.trim());
+      formData.set("folderId", job.folderId);
       formData.set("status", status);
       if (rValue) formData.set("rValue", rValue);
       formData.set("bags", bags.toString());
@@ -54,6 +61,18 @@ export function EditJobForm({ job }: EditJobFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Job Name */}
+      <div>
+        <label className="block text-sm text-muted mb-2">Job name</label>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="e.g. Unit 101, Main Attic"
+          className="w-full h-11 px-4 border border-line rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-ink focus:ring-offset-1"
+        />
+      </div>
+
       {/* Status */}
       <div>
         <label className="block text-sm text-muted mb-2">Status</label>

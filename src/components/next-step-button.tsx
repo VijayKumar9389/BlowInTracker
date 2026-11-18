@@ -8,7 +8,6 @@ type NextStepButtonProps = {
   jobId?: number;
   status: JobStatus | null;
   onOpenSheet: () => void;
-  onOpenViewSheet?: () => void;
   onShowUndo: (jobId: number, previousStatus: JobStatus) => void;
 };
 
@@ -16,42 +15,18 @@ export function NextStepButton({
   jobId,
   status,
   onOpenSheet,
-  onOpenViewSheet,
   onShowUndo,
 }: NextStepButtonProps) {
   const [isPending, startTransition] = useTransition();
 
-  // Complete jobs - show "View" button
-  if (status === "COMPLETE" && jobId) {
-    return (
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onOpenViewSheet?.();
-        }}
-        className="h-9 px-4 text-sm font-medium text-white bg-ink rounded-full hover:bg-ink/90 transition-colors flex items-center"
-      >
-        View
-      </button>
-    );
+  // Complete jobs - no button (tap row to open record)
+  if (status === "COMPLETE") {
+    return null;
   }
 
-  // No job - show "Add job" with subtle outline
+  // No job - shouldn't happen but handle gracefully
   if (!status || !jobId) {
-    return (
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onOpenSheet();
-        }}
-        className="h-9 px-4 text-sm font-medium text-ink bg-surface border border-line rounded-full hover:bg-line/50 transition-colors"
-        aria-label="Add job"
-      >
-        Add job
-      </button>
-    );
+    return null;
   }
 
   // READY - show "Start" with outline
@@ -67,7 +42,7 @@ export function NextStepButton({
             onShowUndo(jobId, "READY");
           });
         }}
-        className="h-9 px-4 text-sm font-medium text-ink bg-white border border-ink/30 rounded-full hover:border-ink disabled:opacity-50 transition-colors"
+        className="h-9 md:h-9 min-h-11 md:min-h-0 px-4 text-sm font-medium text-ink border border-line rounded-full hover:border-ink disabled:opacity-50 transition-colors"
         aria-label="Start job"
       >
         {isPending ? "..." : "Start"}
@@ -84,7 +59,7 @@ export function NextStepButton({
           e.stopPropagation();
           onOpenSheet();
         }}
-        className="h-9 px-4 text-sm font-medium text-white bg-ink rounded-full hover:bg-ink/90 transition-colors"
+        className="h-9 md:h-9 min-h-11 md:min-h-0 px-4 text-sm font-medium text-white bg-ink rounded-full hover:bg-ink/90 transition-colors"
         aria-label="Complete job"
       >
         Complete

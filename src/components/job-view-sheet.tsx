@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import type { Job, Location } from "@prisma/client";
+import type { Job, Folder } from "@prisma/client";
 
 type JobViewSheetProps = {
   open: boolean;
   onClose: () => void;
-  location: Location;
+  folder: Folder;
   job: Job;
 };
 
@@ -23,7 +23,7 @@ function formatDate(date: Date | null): string {
 export function JobViewSheet({
   open,
   onClose,
-  location,
+  folder,
   job,
 }: JobViewSheetProps) {
   const sheetRef = useRef<HTMLDivElement>(null);
@@ -68,8 +68,8 @@ export function JobViewSheet({
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-ink">{location.name}</h2>
-          {location.area && <p className="text-muted mt-0.5">{location.area}</p>}
+          <h2 className="text-xl font-semibold text-ink">{job.name}</h2>
+          <p className="text-muted mt-0.5">{folder.name}{folder.area ? ` · ${folder.area}` : ""}</p>
         </div>
         <button
           type="button"

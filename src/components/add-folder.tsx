@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { createLocation } from "@/app/jobs/actions";
+import { createFolder } from "@/app/jobs/actions";
 import { Dialog } from "./dialog";
 
-export function AddLocation() {
+export function AddFolder() {
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState("");
   const [area, setArea] = useState("");
@@ -20,14 +20,14 @@ export function AddLocation() {
       if (area.trim()) {
         formData.set("area", area.trim());
       }
-      const result = await createLocation(formData);
+      const result = await createFolder(formData);
       if (result.success) {
         setIsOpen(false);
         setName("");
         setArea("");
         setError(null);
       } else {
-        setError(result.error || "Failed to create location");
+        setError(result.error || "Failed to create folder");
       }
     });
   };
@@ -45,17 +45,17 @@ export function AddLocation() {
         onClick={() => setIsOpen(true)}
         className="min-h-11 px-5 border border-line rounded-full text-sm text-muted hover:border-ink hover:text-ink transition-colors"
       >
-        + Add location
+        + Add folder
       </button>
 
-      <Dialog open={isOpen} onClose={handleClose} title="Add location">
+      <Dialog open={isOpen} onClose={handleClose} title="Add folder">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="location-name" className="block text-sm text-muted mb-1.5">
+            <label htmlFor="folder-name" className="block text-sm text-muted mb-1.5">
               Name
             </label>
             <input
-              id="location-name"
+              id="folder-name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -66,11 +66,11 @@ export function AddLocation() {
           </div>
 
           <div>
-            <label htmlFor="location-area" className="block text-sm text-muted mb-1.5">
+            <label htmlFor="folder-area" className="block text-sm text-muted mb-1.5">
               Area <span className="opacity-50">(optional)</span>
             </label>
             <input
-              id="location-area"
+              id="folder-area"
               type="text"
               value={area}
               onChange={(e) => setArea(e.target.value)}
@@ -91,7 +91,7 @@ export function AddLocation() {
               disabled={!name.trim() || isPending}
               className="flex-1 h-11 bg-ink text-white rounded-full font-medium disabled:opacity-50 hover:bg-ink/90 transition-opacity"
             >
-              {isPending ? "Adding..." : "Add location"}
+              {isPending ? "Adding..." : "Add folder"}
             </button>
             <button
               type="button"

@@ -6,9 +6,9 @@ type SearchInputProps = {
   placeholder?: string;
 };
 
-export function SearchInput({ value, onChange, placeholder = "Search..." }: SearchInputProps) {
+export function SearchInput({ value, onChange, placeholder = "Search folders and jobs" }: SearchInputProps) {
   return (
-    <div className="relative">
+    <div className="relative flex-1 min-w-0">
       <svg
         className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted pointer-events-none"
         fill="none"
@@ -27,7 +27,7 @@ export function SearchInput({ value, onChange, placeholder = "Search..." }: Sear
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full h-12 pl-12 pr-10 bg-surface border border-line rounded-xl text-base text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-ink focus:ring-offset-1"
+        className="w-full h-11 pl-12 pr-10 bg-surface rounded-full text-base text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-ink focus:ring-offset-1"
       />
       {value && (
         <button

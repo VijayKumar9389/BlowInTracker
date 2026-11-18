@@ -19,7 +19,7 @@ export default async function EditJobPage({ params }: Props) {
 
   const job = await prisma.job.findUnique({
     where: { id: jobId },
-    include: { location: true },
+    include: { folder: true },
   });
 
   if (!job) {
@@ -30,10 +30,10 @@ export default async function EditJobPage({ params }: Props) {
     <div className="min-h-screen">
       <Header />
       <main className="max-w-lg mx-auto px-4 py-8">
-        <h1 className="text-2xl font-semibold text-ink mb-2">Edit job</h1>
+        <h1 className="text-2xl font-semibold text-ink mb-2">Edit: {job.name}</h1>
         <p className="text-muted mb-8">
-          {job.location.name}
-          {job.location.area && ` · ${job.location.area}`}
+          {job.folder.name}
+          {job.folder.area && ` · ${job.folder.area}`}
         </p>
         <EditJobForm job={job} />
       </main>
