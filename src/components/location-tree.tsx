@@ -518,8 +518,14 @@ function LocationRow({
               </>
             ) : job ? (
               <>
+                {isComplete && (
+                  <>
+                    <RowMenuItem onClick={() => setIsViewSheetOpen(true)}>View record</RowMenuItem>
+                    <RowMenuDivider />
+                  </>
+                )}
                 <RowMenuItem onClick={handleOpenSheet}>Edit bags / R-value / sqft</RowMenuItem>
-                                <RowMenuDivider />
+                <RowMenuDivider />
                 {depth < 3 && <RowMenuItem onClick={() => setIsAddingUnit(true)}>Add unit</RowMenuItem>}
                 <RowMenuItem onClick={() => setIsEditDialogOpen(true)}>Edit location</RowMenuItem>
                 <RowMenuItem onClick={handleDeleteJob} variant="danger">Delete job</RowMenuItem>
@@ -552,7 +558,7 @@ function LocationRow({
 
         {/* Clickable content */}
         <div
-          className={`flex-1 flex items-center min-h-16 py-2 ${hasChildren ? "cursor-pointer" : ""}`}
+          className={`flex-1 min-w-0 flex items-center min-h-16 py-2 ${hasChildren ? "cursor-pointer" : ""}`}
           onClick={hasChildren ? handleRowClick : undefined}
         >
           {/* Status icon / expand indicator */}
@@ -587,7 +593,7 @@ function LocationRow({
         </div>
 
         {/* Right side: number slot or action button */}
-        <div className="flex items-center pr-2" onClick={(e) => e.stopPropagation()}>
+        <div className="flex-shrink-0 flex items-center pr-2" onClick={(e) => e.stopPropagation()}>
           {/* Show numbers for complete jobs and parents without active jobs */}
           {(hasChildren && (!job || isComplete)) || (!hasChildren && isComplete) ? (
             <div className="w-20 text-right pr-2">
@@ -649,8 +655,14 @@ function LocationRow({
               </>
             ) : job ? (
               <>
+                {isComplete && (
+                  <>
+                    <RowMenuItem onClick={() => setIsViewSheetOpen(true)}>View record</RowMenuItem>
+                    <RowMenuDivider />
+                  </>
+                )}
                 <RowMenuItem onClick={handleOpenSheet}>Edit bags / R-value / sqft</RowMenuItem>
-                                <RowMenuDivider />
+                <RowMenuDivider />
                 {depth < 3 && <RowMenuItem onClick={() => setIsAddingUnit(true)}>Add unit</RowMenuItem>}
                 <RowMenuItem onClick={() => setIsEditDialogOpen(true)}>Edit location</RowMenuItem>
                 <RowMenuItem onClick={handleDeleteJob} variant="danger">Delete job</RowMenuItem>
