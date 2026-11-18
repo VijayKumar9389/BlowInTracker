@@ -195,6 +195,7 @@ type FolderRowProps = {
   undoState: UndoState;
   onShowUndo: (jobId: number, previousStatus: JobStatus) => void;
   isTopLevel: boolean;
+  isFirst?: boolean;
   expandedFolders: Set<string>;
   onToggleExpanded: (folderId: string) => void;
 };
@@ -221,6 +222,7 @@ function FolderRow({
   undoState,
   onShowUndo,
   isTopLevel,
+  isFirst = false,
   expandedFolders,
   onToggleExpanded,
 }: FolderRowProps) {
@@ -288,7 +290,7 @@ function FolderRow({
   const desktopHeight = isTopLevel ? "min-h-14" : "min-h-12";
   const mobileHeight = isTopLevel ? "min-h-16" : "min-h-14";
   const rowBg = isTopLevel ? "bg-surface" : "";
-  const topBorder = isTopLevel ? "border-t border-line" : "border-b border-line";
+  const topBorder = isTopLevel ? (isFirst ? "" : "border-t border-line") : "border-b border-line";
 
   return (
     <>
@@ -337,7 +339,9 @@ function FolderRow({
         {/* Status slot */}
         <div className="w-28 flex-shrink-0 flex items-center">
           {isEmpty ? (
-            <span className="text-xs text-muted/60">Empty</span>
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-surface text-muted/60">
+              Empty
+            </span>
           ) : (
             <div className="flex items-center gap-2">
               <div className="w-9 h-1 bg-line rounded-full overflow-hidden">
@@ -354,19 +358,21 @@ function FolderRow({
         </div>
 
         {/* Bags slot */}
-        <div className="w-20 flex-shrink-0 flex items-center justify-end tabular-nums text-ink">
+        <div className="w-24 flex-shrink-0 flex items-center justify-end text-ink">
           {totalBags > 0 && (
-            <span className="text-sm font-semibold">
-              {totalBags}
+            <span className="text-sm">
+              <span className="font-semibold tabular-nums">{totalBags}</span>
+              <span className="text-muted ml-1">bags</span>
             </span>
           )}
         </div>
 
         {/* Sqft slot */}
-        <div className="w-24 flex-shrink-0 flex items-center justify-end tabular-nums text-ink">
+        <div className="w-28 flex-shrink-0 flex items-center justify-end text-ink">
           {totalSqft > 0 && (
             <span className="text-sm">
-              {totalSqft.toLocaleString()}
+              <span className="tabular-nums">{totalSqft.toLocaleString()}</span>
+              <span className="text-muted ml-1">sqft</span>
             </span>
           )}
         </div>
@@ -444,13 +450,15 @@ function FolderRow({
         {/* Right side */}
         <div className="flex-shrink-0 flex items-center gap-0.5 pr-2" onClick={(e) => e.stopPropagation()}>
           {totalBags > 0 && (
-            <div className="w-16 text-right pr-1">
-              <div className="text-sm tabular-nums font-semibold text-ink">
-                {totalBags}
+            <div className="w-20 text-right pr-1">
+              <div className="text-sm text-ink">
+                <span className="tabular-nums font-semibold">{totalBags}</span>
+                <span className="text-muted ml-1 text-xs">bags</span>
               </div>
               {totalSqft > 0 && (
-                <div className="text-xs text-muted tabular-nums">
-                  {totalSqft.toLocaleString()}
+                <div className="text-xs text-muted">
+                  <span className="tabular-nums">{totalSqft.toLocaleString()}</span>
+                  <span className="ml-1">sqft</span>
                 </div>
               )}
             </div>
@@ -655,7 +663,7 @@ export function FolderTree({ folders, filter, searchQuery, lastRValue }: FolderT
   return (
     <>
       <div>
-        {filteredFolders.map((folder) => (
+        {filteredFolders.map((folder, index) => (
           <FolderRow
             key={folder.id}
             folder={folder}
@@ -666,6 +674,7 @@ export function FolderTree({ folders, filter, searchQuery, lastRValue }: FolderT
             undoState={undoState}
             onShowUndo={handleShowUndo}
             isTopLevel={true}
+            isFirst={index === 0}
             expandedFolders={expandedFolders}
             onToggleExpanded={handleToggleExpanded}
           />

@@ -145,24 +145,42 @@ export function JobRow({
           </div>
         </div>
 
-        {/* Status label */}
+        {/* Status chip */}
         <div className="w-28 flex-shrink-0 flex items-center">
-          <span className="text-sm text-ink">
-            {isInProgress ? "In progress" : isComplete ? "Complete" : "Ready"}
-          </span>
+          {isReady && (
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-ready/15 text-ready">
+              Ready
+            </span>
+          )}
+          {isInProgress && (
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-progress/15 text-progress">
+              In progress
+            </span>
+          )}
+          {isComplete && (
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-complete/15 text-complete">
+              {job.completedAt ? formatDate(job.completedAt) : "Complete"}
+            </span>
+          )}
         </div>
 
         {/* Bags slot */}
-        <div className={`w-20 flex-shrink-0 flex items-center justify-end tabular-nums ${getTextClass()}`}>
+        <div className={`w-24 flex-shrink-0 flex items-center justify-end ${getTextClass()}`}>
           {job.bags != null && job.bags > 0 && (
-            <span className="text-sm">{job.bags}</span>
+            <span className="text-sm">
+              <span className="tabular-nums">{job.bags}</span>
+              <span className="text-muted ml-1">bags</span>
+            </span>
           )}
         </div>
 
         {/* Sqft slot */}
-        <div className={`w-24 flex-shrink-0 flex items-center justify-end tabular-nums ${getTextClass()}`}>
+        <div className={`w-28 flex-shrink-0 flex items-center justify-end ${getTextClass()}`}>
           {job.sqft && (
-            <span className="text-sm">{job.sqft.toLocaleString()}</span>
+            <span className="text-sm">
+              <span className="tabular-nums">{job.sqft.toLocaleString()}</span>
+              <span className="text-muted ml-1">sqft</span>
+            </span>
           )}
         </div>
 
@@ -212,13 +230,15 @@ export function JobRow({
 
         <div className="flex-shrink-0 flex items-center gap-0.5 pr-2" onClick={(e) => e.stopPropagation()}>
           {isComplete && job.bags ? (
-            <div className="w-16 text-right pr-1">
-              <div className={`text-sm tabular-nums ${getTextClass()}`}>
-                {job.bags}
+            <div className="w-20 text-right pr-1">
+              <div className={`text-sm ${getTextClass()}`}>
+                <span className="tabular-nums">{job.bags}</span>
+                <span className="text-muted ml-1 text-xs">bags</span>
               </div>
               {job.sqft && (
-                <div className="text-xs text-muted tabular-nums">
-                  {job.sqft.toLocaleString()}
+                <div className="text-xs text-muted">
+                  <span className="tabular-nums">{job.sqft.toLocaleString()}</span>
+                  <span className="ml-1">sqft</span>
                 </div>
               )}
             </div>
