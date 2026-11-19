@@ -192,11 +192,11 @@ export function RowMenuItem({
   icon,
   children,
 }: MenuItemProps) {
-  const baseClasses = "w-full min-h-11 sm:min-h-10 px-5 sm:px-4 text-left text-sm flex items-center justify-between gap-2 transition-colors";
+  const baseClasses = "w-full min-h-14 sm:min-h-10 px-5 sm:px-4 text-left text-base sm:text-sm flex items-center justify-between gap-2 transition-colors";
   const variantClasses =
     variant === "danger"
-      ? "text-danger hover:bg-red-50"
-      : "text-ink hover:bg-surface";
+      ? "text-danger active:bg-red-50 sm:hover:bg-red-50"
+      : "text-ink active:bg-surface sm:hover:bg-surface";
   const disabledClasses = disabled ? "opacity-40 cursor-not-allowed" : "";
 
   return (
@@ -207,8 +207,8 @@ export function RowMenuItem({
       className={`${baseClasses} ${variantClasses} ${disabledClasses}`}
       role="menuitem"
     >
-      <span className="flex items-center gap-2">
-        {icon && <span className="text-muted">{icon}</span>}
+      <span className="flex items-center gap-3 sm:gap-2">
+        {icon && <span className={variant === "danger" ? "text-danger/70" : "text-muted"}>{icon}</span>}
         {children}
         {active && (
           <svg className="w-4 h-4 text-ink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
