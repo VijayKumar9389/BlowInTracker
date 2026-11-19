@@ -16,12 +16,12 @@ const filters: { value: FilterType; label: string }[] = [
 
 export function FilterTabs({ value, onChange, counts }: FilterTabsProps) {
   return (
-    <div className="inline-flex bg-surface rounded-full p-1">
+    <div className="flex w-full sm:w-auto sm:inline-flex bg-surface rounded-full p-1">
       {filters.map((filter) => (
         <button
           key={filter.value}
           onClick={() => onChange(filter.value)}
-          className={`h-8 px-4 rounded-full text-sm font-medium transition-colors ${
+          className={`flex-1 sm:flex-initial h-8 px-4 rounded-full text-sm font-medium transition-colors ${
             value === filter.value
               ? "bg-ink text-white"
               : "text-muted hover:text-ink"
