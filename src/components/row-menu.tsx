@@ -96,11 +96,11 @@ export function RowMenu({ title, subtitle, children }: RowMenuProps) {
           ? "fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl"
           : "absolute right-0 top-full mt-1 z-50 min-w-56 bg-white border border-line rounded-xl shadow-lg origin-top-right"
         }
-        transition-all duration-150 ease-out
+        transition-all duration-200 ease-out
         ${isAnimating
           ? "opacity-100 scale-100 translate-y-0"
           : isMobile
-            ? "opacity-0 translate-y-4"
+            ? "opacity-0 translate-y-full"
             : "opacity-0 scale-95"
         }
       `}
@@ -160,7 +160,7 @@ export function RowMenu({ title, subtitle, children }: RowMenuProps) {
         <>
           {isMobile && (
             <div
-              className={`fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm transition-opacity duration-150 ${isAnimating ? "opacity-100" : "opacity-0"}`}
+              className={`fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm transition-opacity duration-200 ${isAnimating ? "opacity-100" : "opacity-0"}`}
               onClick={handleClose}
             />
           )}
@@ -329,11 +329,11 @@ export function AddMenu({ onAddJob, onAddSubfolder, canAddSubfolder = true }: Ad
           ? "fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl"
           : "absolute right-0 top-full mt-1 z-50 min-w-40 bg-white border border-line rounded-xl shadow-lg origin-top-right"
         }
-        transition-all duration-150 ease-out
+        transition-all duration-200 ease-out
         ${isAnimating
           ? "opacity-100 scale-100 translate-y-0"
           : isMobile
-            ? "opacity-0 translate-y-4"
+            ? "opacity-0 translate-y-full"
             : "opacity-0 scale-95"
         }
       `}
@@ -413,7 +413,7 @@ export function AddMenu({ onAddJob, onAddSubfolder, canAddSubfolder = true }: Ad
         <>
           {isMobile && (
             <div
-              className={`fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm transition-opacity duration-150 ${isAnimating ? "opacity-100" : "opacity-0"}`}
+              className={`fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm transition-opacity duration-200 ${isAnimating ? "opacity-100" : "opacity-0"}`}
               onClick={handleClose}
             />
           )}
