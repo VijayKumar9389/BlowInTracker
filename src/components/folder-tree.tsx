@@ -424,7 +424,7 @@ function FolderRow({
       >
         <TreeGuides depth={depth} isMobile />
 
-        <div className={`flex-1 min-w-0 flex items-center ${mobileHeight} py-2`}>
+        <div className={`flex-1 min-w-0 flex items-center ${mobileHeight} py-3`}
           {/* Chevron or spacer - matches tree guide width */}
           <div className="w-4 flex-shrink-0 flex items-center justify-center">
             {hasContents ? (
@@ -454,9 +454,9 @@ function FolderRow({
               {folder.name}
             </div>
             {isEmpty ? (
-              <div className="text-xs text-muted">Empty</div>
+              <div className="text-xs text-muted mt-1">Empty</div>
             ) : (
-              <div className="text-xs text-muted mt-0.5">
+              <div className="text-xs text-muted mt-1">
                 {[
                   <span key="done">{complete} of {total} done</span>,
                   totalBags > 0 ? <span key="bags"><span className="font-semibold text-ink">{totalBags}</span> bags</span> : null,

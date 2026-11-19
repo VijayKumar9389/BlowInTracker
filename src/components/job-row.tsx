@@ -225,7 +225,7 @@ export function JobRow({
       >
         <TreeGuides depth={depth} isMobile />
 
-        <div className="flex-1 min-w-0 flex items-center min-h-14 py-2">
+        <div className="flex-1 min-w-0 flex items-center min-h-16 py-3">
           {/* Spacer to align with folder chevron */}
           <div className="w-4 flex-shrink-0" />
 
@@ -237,18 +237,20 @@ export function JobRow({
           {/* Name and metrics */}
           <div className={`flex-1 min-w-0 pr-2 ${getTextClass()}`}>
             <div className="truncate">{job.name}</div>
-            <div className="text-xs text-muted truncate">
-              {getMobileSubtext()}
-            </div>
-            {isComplete && (job.bags || job.sqft || job.rValue) && (
-              <div className="text-xs text-muted mt-0.5">
+            {isComplete ? (
+              <div className="text-xs text-muted mt-1">
                 {[
+                  job.completedAt ? formatDate(job.completedAt) : null,
                   job.bags ? <span key="bags"><span className="font-semibold text-ink/70">{job.bags}</span> bags</span> : null,
                   job.sqft ? <span key="sqft">{job.sqft.toLocaleString()} sqft</span> : null,
                   job.rValue ? <span key="rvalue">R{job.rValue}</span> : null,
                 ].filter(Boolean).map((item, i, arr) => (
                   <span key={i}>{item}{i < arr.length - 1 ? " · " : ""}</span>
                 ))}
+              </div>
+            ) : (
+              <div className="text-xs text-muted mt-1">
+                {getMobileSubtext()}
               </div>
             )}
           </div>
