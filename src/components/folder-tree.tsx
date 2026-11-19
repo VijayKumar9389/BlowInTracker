@@ -454,9 +454,9 @@ function FolderRow({
               {folder.name}
             </div>
             {isEmpty ? (
-              <div className="text-xs text-muted mt-1">Empty</div>
+              <div className="text-xs text-muted">Empty</div>
             ) : (
-              <div className="text-xs text-muted mt-1">
+              <div className="text-xs text-muted">
                 {[
                   <span key="done">{complete} of {total} done</span>,
                   totalBags > 0 ? <span key="bags"><span className="font-semibold text-ink">{totalBags}</span> bags</span> : null,

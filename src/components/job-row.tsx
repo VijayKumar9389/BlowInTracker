@@ -238,7 +238,7 @@ export function JobRow({
           <div className={`flex-1 min-w-0 pr-2 ${getTextClass()}`}>
             <div className="truncate">{job.name}</div>
             {isComplete ? (
-              <div className="text-xs text-muted mt-1">
+              <div className="text-xs text-muted">
                 {[
                   job.completedAt ? formatDate(job.completedAt) : null,
                   job.bags ? <span key="bags"><span className="font-semibold text-ink/70">{job.bags}</span> bags</span> : null,
@@ -249,7 +249,7 @@ export function JobRow({
                 ))}
               </div>
             ) : (
-              <div className="text-xs text-muted mt-1">
+              <div className="text-xs text-muted">
                 {getMobileSubtext()}
               </div>
             )}
