@@ -424,7 +424,7 @@ function FolderRow({
       >
         <TreeGuides depth={depth} isMobile />
 
-        <div className={`flex-1 min-w-0 flex items-center ${mobileHeight} py-3`}
+        <div className={`flex-1 min-w-0 flex items-center ${mobileHeight} py-3`}>
           {/* Chevron or spacer - matches tree guide width */}
           <div className="w-4 flex-shrink-0 flex items-center justify-center">
             {hasContents ? (
