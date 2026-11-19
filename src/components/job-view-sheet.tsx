@@ -137,7 +137,7 @@ export function JobViewSheet({
     <button
       type="button"
       onClick={onClose}
-      className="w-full h-14 bg-ink text-white rounded-2xl font-medium text-lg hover:bg-ink/90 transition-all"
+      className="w-full h-12 bg-ink text-white rounded-full font-medium hover:bg-ink/90 transition-all"
     >
       Done
     </button>

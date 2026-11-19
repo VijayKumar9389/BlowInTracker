@@ -58,3 +58,48 @@ dialog[open] {
     font-size: 16px;
   }
 }
+
+/* Dropdown animations */
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-dropdown {
+  animation: dropdown-in 150ms ease-out;
+  transform-origin: top right;
+}
+
+.animate-slide-up {
+  animation: slide-up 200ms ease-out;
+}
+
+.animate-fade {
+  animation: fade-in 200ms ease-out;
+}

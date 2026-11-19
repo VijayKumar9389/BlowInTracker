@@ -126,20 +126,13 @@ export function AddJobDialog({ open, onClose, folder }: AddJobDialogProps) {
           )}
         </div>
 
-        <div className="flex gap-3 mt-6">
+        <div className="mt-6">
           <button
             type="submit"
             disabled={!name.trim() || isPending}
-            className="flex-1 h-11 bg-ink text-white rounded-full font-medium disabled:opacity-50 hover:bg-ink/90 transition-opacity"
+            className="w-full h-12 bg-ink text-white rounded-full font-medium disabled:opacity-50 hover:bg-ink/90 transition-opacity"
           >
             {isPending ? "Creating..." : "Add job"}
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="h-11 px-6 text-muted hover:text-ink transition-colors"
-          >
-            Cancel
           </button>
         </div>
       </form>

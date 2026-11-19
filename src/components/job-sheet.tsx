@@ -318,7 +318,7 @@ export function JobSheet({
             type="button"
             onClick={() => handleSave(true)}
             disabled={isPending}
-            className="w-full h-14 bg-ink text-white rounded-2xl font-medium text-lg hover:bg-ink/90 disabled:opacity-50 transition-all"
+            className="w-full h-12 bg-ink text-white rounded-full font-medium hover:bg-ink/90 disabled:opacity-50 transition-all"
           >
             {isPending ? "Saving..." : `Complete · ${bags} bags`}
           </button>
@@ -336,7 +336,7 @@ export function JobSheet({
           type="button"
           onClick={() => handleSave(false)}
           disabled={isPending}
-          className="w-full h-14 bg-ink text-white rounded-2xl font-medium text-lg hover:bg-ink/90 disabled:opacity-50 transition-all"
+          className="w-full h-12 bg-ink text-white rounded-full font-medium hover:bg-ink/90 disabled:opacity-50 transition-all"
         >
           {isPending ? "Saving..." : "Save"}
         </button>

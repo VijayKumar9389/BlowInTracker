@@ -11,6 +11,7 @@ type RowMenuProps = {
 
 export function RowMenu({ title, subtitle, children }: RowMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -21,6 +22,14 @@ export function RowMenu({ title, subtitle, children }: RowMenuProps) {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      requestAnimationFrame(() => setIsAnimating(true));
+    } else {
+      setIsAnimating(false);
+    }
+  }, [isOpen]);
 
   const handleClose = useCallback(() => setIsOpen(false), []);
 
@@ -82,11 +91,19 @@ export function RowMenu({ title, subtitle, children }: RowMenuProps) {
   const menuContent = (
     <div
       ref={menuRef}
-      className={
-        isMobile
-          ? "fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl animate-in slide-in-from-bottom duration-200"
-          : "absolute right-0 top-full mt-1 z-50 min-w-56 bg-white border border-line rounded-xl shadow-lg"
-      }
+      className={`
+        ${isMobile
+          ? "fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl"
+          : "absolute right-0 top-full mt-1 z-50 min-w-56 bg-white border border-line rounded-xl shadow-lg origin-top-right"
+        }
+        transition-all duration-150 ease-out
+        ${isAnimating
+          ? "opacity-100 scale-100 translate-y-0"
+          : isMobile
+            ? "opacity-0 translate-y-4"
+            : "opacity-0 scale-95"
+        }
+      `}
       role="menu"
       aria-label={title}
     >
@@ -143,7 +160,7 @@ export function RowMenu({ title, subtitle, children }: RowMenuProps) {
         <>
           {isMobile && (
             <div
-              className="fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm animate-in fade-in duration-200"
+              className={`fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm transition-opacity duration-150 ${isAnimating ? "opacity-100" : "opacity-0"}`}
               onClick={handleClose}
             />
           )}
@@ -242,6 +259,7 @@ type AddMenuProps = {
 
 export function AddMenu({ onAddJob, onAddSubfolder, canAddSubfolder = true }: AddMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -252,6 +270,14 @@ export function AddMenu({ onAddJob, onAddSubfolder, canAddSubfolder = true }: Ad
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      requestAnimationFrame(() => setIsAnimating(true));
+    } else {
+      setIsAnimating(false);
+    }
+  }, [isOpen]);
 
   const handleClose = useCallback(() => setIsOpen(false), []);
 
@@ -295,11 +321,19 @@ export function AddMenu({ onAddJob, onAddSubfolder, canAddSubfolder = true }: Ad
   const menuContent = (
     <div
       ref={menuRef}
-      className={
-        isMobile
-          ? "fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl animate-in slide-in-from-bottom duration-200"
-          : "absolute right-0 top-full mt-1 z-50 min-w-40 bg-white border border-line rounded-xl shadow-lg"
-      }
+      className={`
+        ${isMobile
+          ? "fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl"
+          : "absolute right-0 top-full mt-1 z-50 min-w-40 bg-white border border-line rounded-xl shadow-lg origin-top-right"
+        }
+        transition-all duration-150 ease-out
+        ${isAnimating
+          ? "opacity-100 scale-100 translate-y-0"
+          : isMobile
+            ? "opacity-0 translate-y-4"
+            : "opacity-0 scale-95"
+        }
+      `}
       role="menu"
       aria-label="Add options"
     >
@@ -376,7 +410,7 @@ export function AddMenu({ onAddJob, onAddSubfolder, canAddSubfolder = true }: Ad
         <>
           {isMobile && (
             <div
-              className="fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm animate-in fade-in duration-200"
+              className={`fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm transition-opacity duration-150 ${isAnimating ? "opacity-100" : "opacity-0"}`}
               onClick={handleClose}
             />
           )}

@@ -45,7 +45,7 @@ export function AddFolderDialog({ open, onClose }: AddFolderDialogProps) {
     <Dialog open={open} onClose={onClose} title="New folder">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="folder-name" className="block text-sm text-muted mb-1.5">
+          <label htmlFor="folder-name" className="block text-sm font-medium text-ink mb-1.5">
             Name
           </label>
           <input
@@ -60,8 +60,9 @@ export function AddFolderDialog({ open, onClose }: AddFolderDialogProps) {
         </div>
 
         <div>
-          <label htmlFor="folder-area" className="block text-sm text-muted mb-1.5">
-            Area <span className="opacity-50">(optional)</span>
+          <label htmlFor="folder-area" className="block text-sm text-ink mb-1.5">
+            <span className="font-medium">Area</span>
+            <span className="text-muted"> · optional</span>
           </label>
           <input
             id="folder-area"
@@ -79,20 +80,13 @@ export function AddFolderDialog({ open, onClose }: AddFolderDialogProps) {
           </div>
         )}
 
-        <div className="flex gap-3 pt-2">
+        <div className="pt-2">
           <button
             type="submit"
             disabled={!name.trim() || isPending}
-            className="flex-1 h-11 bg-ink text-white rounded-full font-medium disabled:opacity-50 hover:bg-ink/90 transition-opacity"
+            className="w-full h-12 bg-ink text-white rounded-full font-medium disabled:opacity-50 hover:bg-ink/90 transition-opacity"
           >
             {isPending ? "Creating..." : "Create folder"}
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="h-11 px-6 text-muted hover:text-ink transition-colors"
-          >
-            Cancel
           </button>
         </div>
       </form>

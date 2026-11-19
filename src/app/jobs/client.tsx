@@ -29,7 +29,7 @@ export function JobsPageClient({
   return (
     <div className="min-h-screen">
       <Header />
-      <main className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
+      <main className="max-w-4xl mx-auto px-4 pt-6 sm:pt-8 pb-40">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-semibold tracking-tight text-ink">Jobs</h1>
@@ -58,7 +58,7 @@ export function JobsPageClient({
         </div>
 
         {/* Tree container */}
-        <div className="border border-line rounded-2xl overflow-hidden">
+        <div className="border border-line">
           <FolderTree
             folders={folders}
             filter={filter}

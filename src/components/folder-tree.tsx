@@ -357,6 +357,9 @@ function FolderRow({
           )}
         </div>
 
+        {/* R-value spacer (jobs show R-value here) */}
+        <div className="w-16 flex-shrink-0" />
+
         {/* Bags slot */}
         <div className="w-24 flex-shrink-0 flex items-center justify-end text-ink">
           {totalBags > 0 && (
@@ -388,16 +391,27 @@ function FolderRow({
           <RowMenu title={folder.name} subtitle={folder.area || undefined}>
             {isTopLevel && (
               <>
-                <RowMenuItem onClick={() => exportFolderPdf(folder)}>Export PDF</RowMenuItem>
+                <RowMenuItem
+                  onClick={() => exportFolderPdf(folder)}
+                  icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>}
+                >
+                  Export PDF
+                </RowMenuItem>
                 <RowMenuDivider />
               </>
             )}
-            <RowMenuItem onClick={() => setIsEditDialogOpen(true)}>Edit folder</RowMenuItem>
+            <RowMenuItem
+              onClick={() => setIsEditDialogOpen(true)}
+              icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>}
+            >
+              Edit folder
+            </RowMenuItem>
             <RowMenuItem
               onClick={handleDelete}
               disabled={!canDelete}
               hint={!canDelete ? "Has contents" : undefined}
               variant="danger"
+              icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>}
             >
               Delete folder
             </RowMenuItem>
@@ -473,16 +487,27 @@ function FolderRow({
           <RowMenu title={folder.name} subtitle={folder.area || undefined}>
             {isTopLevel && (
               <>
-                <RowMenuItem onClick={() => exportFolderPdf(folder)}>Export PDF</RowMenuItem>
+                <RowMenuItem
+                  onClick={() => exportFolderPdf(folder)}
+                  icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>}
+                >
+                  Export PDF
+                </RowMenuItem>
                 <RowMenuDivider />
               </>
             )}
-            <RowMenuItem onClick={() => setIsEditDialogOpen(true)}>Edit folder</RowMenuItem>
+            <RowMenuItem
+              onClick={() => setIsEditDialogOpen(true)}
+              icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>}
+            >
+              Edit folder
+            </RowMenuItem>
             <RowMenuItem
               onClick={handleDelete}
               disabled={!canDelete}
               hint={!canDelete ? "Has contents" : undefined}
               variant="danger"
+              icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>}
             >
               Delete folder
             </RowMenuItem>
@@ -576,23 +601,26 @@ function FolderRow({
 
 export function FolderTree({ folders, filter, searchQuery, lastRValue }: FolderTreeProps) {
   const [undoState, setUndoState] = useState<UndoState>(null);
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(() => {
-    // Load from localStorage on mount
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("expandedFolders");
-      if (saved) {
-        try {
-          return new Set(JSON.parse(saved));
-        } catch {
-          // ignore
-        }
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Load from localStorage after hydration
+  useEffect(() => {
+    const saved = localStorage.getItem("expandedFolders");
+    if (saved) {
+      try {
+        setExpandedFolders(new Set(JSON.parse(saved)));
+      } catch {
+        // ignore
       }
     }
-    return new Set();
-  });
+    setIsHydrated(true);
+  }, []);
 
   // Initialize: collapse folders where all jobs are complete
   useEffect(() => {
+    if (!isHydrated) return;
+
     const allCompleteIds = new Set<string>();
 
     function checkFolder(folder: FolderWithRelations) {
@@ -615,14 +643,13 @@ export function FolderTree({ folders, filter, searchQuery, lastRValue }: FolderT
       });
       return newSet;
     });
-  }, [folders]);
+  }, [folders, isHydrated]);
 
-  // Save to localStorage when expanded folders change
+  // Save to localStorage when expanded folders change (only after hydration)
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("expandedFolders", JSON.stringify([...expandedFolders]));
-    }
-  }, [expandedFolders]);
+    if (!isHydrated) return;
+    localStorage.setItem("expandedFolders", JSON.stringify([...expandedFolders]));
+  }, [expandedFolders, isHydrated]);
 
   const handleToggleExpanded = useCallback((folderId: string) => {
     setExpandedFolders((prev) => {
