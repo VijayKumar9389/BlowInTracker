@@ -363,8 +363,8 @@ export function JobSheet({
           <div className="flex justify-center pt-3 pb-2">
             <div className="w-10 h-1 bg-line rounded-full" />
           </div>
-          <div className="flex-1 overflow-y-auto px-5 pb-4">{content}</div>
-          <div className="p-5 pt-0 bg-white border-t border-line">{footer}</div>
+          <div className="flex-1 overflow-y-auto px-5 pb-2">{content}</div>
+          <div className="p-5 bg-white border-t border-line">{footer}</div>
         </div>
       </>
     );
@@ -388,8 +388,8 @@ export function JobSheet({
             isAnimating ? "opacity-100 scale-100" : "opacity-0 scale-95"
           }`}
         >
-          <div className="flex-1 overflow-y-auto p-6">{content}</div>
-          <div className="p-6 pt-0">{footer}</div>
+          <div className="flex-1 overflow-y-auto p-6 pb-2">{content}</div>
+          <div className="p-6">{footer}</div>
         </div>
       </div>
     </>
