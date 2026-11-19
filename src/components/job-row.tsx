@@ -234,37 +234,28 @@ export function JobRow({
             <StatusRing status={job.status} />
           </div>
 
-          {/* Name */}
+          {/* Name and metrics */}
           <div className={`flex-1 min-w-0 pr-2 ${getTextClass()}`}>
             <div className="truncate">{job.name}</div>
             <div className="text-xs text-muted truncate">
               {getMobileSubtext()}
             </div>
+            {isComplete && (job.bags || job.sqft || job.rValue) && (
+              <div className="text-xs text-muted mt-0.5">
+                {[
+                  job.bags ? <span key="bags"><span className="font-semibold text-ink/70">{job.bags}</span> bags</span> : null,
+                  job.sqft ? <span key="sqft">{job.sqft.toLocaleString()} sqft</span> : null,
+                  job.rValue ? <span key="rvalue">R{job.rValue}</span> : null,
+                ].filter(Boolean).map((item, i, arr) => (
+                  <span key={i}>{item}{i < arr.length - 1 ? " · " : ""}</span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
         <div className="flex-shrink-0 flex items-center gap-0.5 pr-2" onClick={(e) => e.stopPropagation()}>
-          {isComplete ? (
-            <div className="w-24 text-right pr-1">
-              {job.bags != null && job.bags > 0 && (
-                <div className={`text-sm ${getTextClass()}`}>
-                  <span className="tabular-nums font-semibold">{job.bags}</span>
-                  <span className="text-muted ml-1 text-xs">bags</span>
-                </div>
-              )}
-              {job.sqft && (
-                <div className="text-xs text-muted">
-                  <span className="tabular-nums">{job.sqft.toLocaleString()}</span>
-                  <span className="ml-1">sqft</span>
-                </div>
-              )}
-              {job.rValue && (
-                <div className="text-xs text-muted">
-                  R{job.rValue}
-                </div>
-              )}
-            </div>
-          ) : (
+          {!isComplete && (
             <NextStepButton
               jobId={job.id}
               status={job.status}

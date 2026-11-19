@@ -459,31 +459,22 @@ function FolderRow({
             <div className="text-xs text-muted truncate">
               {isEmpty ? "Empty" : folder.area || ""}
             </div>
+            {!isEmpty && (
+              <div className="text-xs text-muted mt-0.5">
+                {[
+                  <span key="done">{complete} of {total} done</span>,
+                  totalBags > 0 ? <span key="bags"><span className="font-semibold text-ink">{totalBags}</span> bags</span> : null,
+                  totalSqft > 0 ? <span key="sqft">{totalSqft.toLocaleString()} sqft</span> : null,
+                ].filter(Boolean).map((item, i, arr) => (
+                  <span key={i}>{item}{i < arr.length - 1 ? " · " : ""}</span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Right side */}
         <div className="flex-shrink-0 flex items-center gap-0.5 pr-2" onClick={(e) => e.stopPropagation()}>
-          {!isEmpty && (
-            <div className="w-24 text-right pr-1">
-              <div className="text-xs text-muted">
-                {complete} of {total} done
-              </div>
-              {totalBags > 0 && (
-                <div className="text-sm text-ink">
-                  <span className="tabular-nums font-semibold">{totalBags}</span>
-                  <span className="text-muted ml-1 text-xs">bags</span>
-                </div>
-              )}
-              {totalSqft > 0 && (
-                <div className="text-xs text-muted">
-                  <span className="tabular-nums">{totalSqft.toLocaleString()}</span>
-                  <span className="ml-1">sqft</span>
-                </div>
-              )}
-            </div>
-          )}
-
           <AddMenu
             onAddJob={handleAddJob}
             onAddSubfolder={() => setIsAddingUnit(true)}
