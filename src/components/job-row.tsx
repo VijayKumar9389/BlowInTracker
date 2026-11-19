@@ -247,27 +247,34 @@ export function JobRow({
         </div>
 
         <div className="flex-shrink-0 flex items-center gap-0.5 pr-2" onClick={(e) => e.stopPropagation()}>
-          {isComplete && job.bags ? (
-            <div className="w-20 text-right pr-1">
-              <div className={`text-sm ${getTextClass()}`}>
-                <span className="tabular-nums">{job.bags}</span>
-                <span className="text-muted ml-1 text-xs">bags</span>
-              </div>
+          {isComplete ? (
+            <div className="w-24 text-right pr-1">
+              {job.bags != null && job.bags > 0 && (
+                <div className={`text-sm ${getTextClass()}`}>
+                  <span className="tabular-nums">{job.bags}</span>
+                  <span className="text-muted ml-1 text-xs">bags</span>
+                </div>
+              )}
               {job.sqft && (
                 <div className="text-xs text-muted">
                   <span className="tabular-nums">{job.sqft.toLocaleString()}</span>
                   <span className="ml-1">sqft</span>
                 </div>
               )}
+              {job.rValue && (
+                <div className="text-xs text-muted">
+                  R{job.rValue}
+                </div>
+              )}
             </div>
-          ) : !isComplete ? (
+          ) : (
             <NextStepButton
               jobId={job.id}
               status={job.status}
               onOpenSheet={handleOpenSheet}
               onShowUndo={onShowUndo}
             />
-          ) : null}
+          )}
 
           <RowMenu title={job.name}>
             <RowMenuItem

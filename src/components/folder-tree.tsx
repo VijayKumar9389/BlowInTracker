@@ -456,25 +456,30 @@ function FolderRow({
               {folder.name}
             </div>
             <div className="text-xs text-muted truncate">
-              {isEmpty ? "Empty" : folder.area ? `${folder.area} · ${complete} of ${total} done` : `${complete} of ${total} done`}
+              {isEmpty ? "Empty" : folder.area || ""}
             </div>
           </div>
         </div>
 
         {/* Right side */}
         <div className="flex-shrink-0 flex items-center gap-0.5 pr-2" onClick={(e) => e.stopPropagation()}>
-          {totalBags > 0 && (
-            <div className="w-20 text-right pr-1">
-              <div className="text-sm text-ink">
-                <span className="tabular-nums font-semibold">{totalBags}</span>
-                <span className="text-muted ml-1 text-xs">bags</span>
-              </div>
+          {!isEmpty && (
+            <div className="w-24 text-right pr-1">
+              {totalBags > 0 && (
+                <div className="text-sm text-ink">
+                  <span className="tabular-nums font-semibold">{totalBags}</span>
+                  <span className="text-muted ml-1 text-xs">bags</span>
+                </div>
+              )}
               {totalSqft > 0 && (
                 <div className="text-xs text-muted">
                   <span className="tabular-nums">{totalSqft.toLocaleString()}</span>
                   <span className="ml-1">sqft</span>
                 </div>
               )}
+              <div className="text-xs text-muted">
+                {complete} of {total} done
+              </div>
             </div>
           )}
 
