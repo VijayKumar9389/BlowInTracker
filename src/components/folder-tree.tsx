@@ -406,6 +406,7 @@ function FolderRow({
             >
               Edit folder
             </RowMenuItem>
+            <RowMenuDivider />
             <RowMenuItem
               onClick={handleDelete}
               disabled={!canDelete}
@@ -507,6 +508,7 @@ function FolderRow({
             >
               Edit folder
             </RowMenuItem>
+            <RowMenuDivider />
             <RowMenuItem
               onClick={handleDelete}
               disabled={!canDelete}
