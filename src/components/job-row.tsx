@@ -114,11 +114,8 @@ export function JobRow({
     if (isInProgress) {
       return job.bags ? `In progress · ${job.bags} bags` : "In progress";
     }
-    // Complete
-    const parts = [];
-    if (job.rValue) parts.push(`R${job.rValue}`);
-    if (job.completedAt) parts.push(formatDate(job.completedAt));
-    return parts.join(" · ") || "Complete";
+    // Complete - R-value shown in stacked metrics, just show date
+    return job.completedAt ? formatDate(job.completedAt) : "Complete";
   };
 
   return (
