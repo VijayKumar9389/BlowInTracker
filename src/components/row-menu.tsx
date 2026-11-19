@@ -179,6 +179,7 @@ type MenuItemProps = {
   hint?: string;
   active?: boolean;
   variant?: "default" | "danger";
+  icon?: ReactNode;
   children: ReactNode;
 };
 
@@ -188,6 +189,7 @@ export function RowMenuItem({
   hint,
   active = false,
   variant = "default",
+  icon,
   children,
 }: MenuItemProps) {
   const baseClasses = "w-full min-h-11 sm:min-h-10 px-5 sm:px-4 text-left text-sm flex items-center justify-between gap-2 transition-colors";
@@ -206,6 +208,7 @@ export function RowMenuItem({
       role="menuitem"
     >
       <span className="flex items-center gap-2">
+        {icon && <span className="text-muted">{icon}</span>}
         {children}
         {active && (
           <svg className="w-4 h-4 text-ink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
