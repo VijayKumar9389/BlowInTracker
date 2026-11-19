@@ -126,7 +126,7 @@ export function RowMenu({ title, subtitle, children }: RowMenuProps) {
           <button
             type="button"
             onClick={handleClose}
-            className="w-full min-h-12 bg-surface text-ink font-medium rounded-xl hover:bg-line transition-colors"
+            className="w-full h-12 bg-surface text-ink font-medium rounded-full hover:bg-line transition-colors"
           >
             Cancel
           </button>
@@ -381,7 +381,7 @@ export function AddMenu({ onAddJob, onAddSubfolder, canAddSubfolder = true }: Ad
           <button
             type="button"
             onClick={handleClose}
-            className="w-full min-h-12 bg-surface text-ink font-medium rounded-xl hover:bg-line transition-colors"
+            className="w-full h-12 bg-surface text-ink font-medium rounded-full hover:bg-line transition-colors"
           >
             Cancel
           </button>
