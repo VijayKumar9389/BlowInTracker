@@ -30,7 +30,7 @@ export function SummaryRow({ jobs }: SummaryRowProps) {
         </div>
 
         {/* Bags recorded */}
-        <div className="p-4 text-center">
+        <div className="p-4 text-center border-t border-line md:border-t-0">
           <div className="text-2xl font-semibold text-ink tabular-nums">
             {totalBags > 0 ? totalBags.toLocaleString() : "—"}
           </div>
@@ -38,7 +38,7 @@ export function SummaryRow({ jobs }: SummaryRowProps) {
         </div>
 
         {/* Sqft recorded */}
-        <div className="p-4 text-center">
+        <div className="p-4 text-center border-t border-line md:border-t-0">
           <div className="text-2xl font-semibold text-ink tabular-nums">
             {totalSqft > 0 ? totalSqft.toLocaleString() : "—"}
           </div>
