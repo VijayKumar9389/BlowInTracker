@@ -8,7 +8,7 @@ type SearchInputProps = {
 
 export function SearchInput({ value, onChange, placeholder = "Search folders and jobs" }: SearchInputProps) {
   return (
-    <div className="relative flex-1 min-w-0">
+    <div className="relative w-full sm:flex-1 sm:min-w-0">
       <svg
         className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted pointer-events-none"
         fill="none"

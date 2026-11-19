@@ -49,7 +49,7 @@ export function JobsPageClient({
         <SummaryRow jobs={jobs} />
 
         {/* Search and filter row */}
-        <div className="flex flex-wrap items-center gap-3 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
           <SearchInput
             value={searchQuery}
             onChange={setSearchQuery}
