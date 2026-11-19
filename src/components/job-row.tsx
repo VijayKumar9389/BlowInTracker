@@ -245,7 +245,7 @@ export function JobRow({
                   job.sqft ? <span key="sqft">{job.sqft.toLocaleString()} sqft</span> : null,
                   job.rValue ? <span key="rvalue">R{job.rValue}</span> : null,
                 ].filter(Boolean).map((item, i, arr) => (
-                  <span key={i}>{item}{i < arr.length - 1 ? " · " : ""}</span>
+                  <span key={i}>{item}{i < arr.length - 1 ? <span className="mx-1.5">·</span> : ""}</span>
                 ))}
               </div>
             ) : (

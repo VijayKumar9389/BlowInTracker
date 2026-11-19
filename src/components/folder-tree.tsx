@@ -462,7 +462,7 @@ function FolderRow({
                   totalBags > 0 ? <span key="bags"><span className="font-semibold text-ink">{totalBags}</span> bags</span> : null,
                   totalSqft > 0 ? <span key="sqft">{totalSqft.toLocaleString()} sqft</span> : null,
                 ].filter(Boolean).map((item, i, arr) => (
-                  <span key={i}>{item}{i < arr.length - 1 ? " · " : ""}</span>
+                  <span key={i}>{item}{i < arr.length - 1 ? <span className="mx-1.5">·</span> : ""}</span>
                 ))}
               </div>
             )}
