@@ -465,6 +465,9 @@ function FolderRow({
         <div className="flex-shrink-0 flex items-center gap-0.5 pr-2" onClick={(e) => e.stopPropagation()}>
           {!isEmpty && (
             <div className="w-24 text-right pr-1">
+              <div className="text-xs text-muted">
+                {complete} of {total} done
+              </div>
               {totalBags > 0 && (
                 <div className="text-sm text-ink">
                   <span className="tabular-nums font-semibold">{totalBags}</span>
@@ -477,9 +480,6 @@ function FolderRow({
                   <span className="ml-1">sqft</span>
                 </div>
               )}
-              <div className="text-xs text-muted">
-                {complete} of {total} done
-              </div>
             </div>
           )}
 
