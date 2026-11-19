@@ -175,7 +175,7 @@ export function JobRow({
         <div className={`w-24 flex-shrink-0 flex items-center justify-end ${getTextClass()}`}>
           {job.bags != null && job.bags > 0 && (
             <span className="text-sm">
-              <span className="tabular-nums">{job.bags}</span>
+              <span className="tabular-nums font-semibold">{job.bags}</span>
               <span className="text-muted ml-1">bags</span>
             </span>
           )}
@@ -251,7 +251,7 @@ export function JobRow({
             <div className="w-24 text-right pr-1">
               {job.bags != null && job.bags > 0 && (
                 <div className={`text-sm ${getTextClass()}`}>
-                  <span className="tabular-nums">{job.bags}</span>
+                  <span className="tabular-nums font-semibold">{job.bags}</span>
                   <span className="text-muted ml-1 text-xs">bags</span>
                 </div>
               )}
