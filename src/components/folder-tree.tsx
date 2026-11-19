@@ -330,9 +330,6 @@ function FolderRow({
             <div className={`truncate ${isTopLevel ? "font-semibold text-base" : "font-medium"}`}>
               {folder.name}
             </div>
-            {folder.area && (
-              <div className="text-xs text-muted truncate">{folder.area}</div>
-            )}
           </div>
         </div>
 
@@ -456,10 +453,9 @@ function FolderRow({
             <div className={`truncate ${isTopLevel ? "font-semibold" : "font-medium"}`}>
               {folder.name}
             </div>
-            <div className="text-xs text-muted truncate">
-              {isEmpty ? "Empty" : folder.area || ""}
-            </div>
-            {!isEmpty && (
+            {isEmpty ? (
+              <div className="text-xs text-muted">Empty</div>
+            ) : (
               <div className="text-xs text-muted mt-0.5">
                 {[
                   <span key="done">{complete} of {total} done</span>,
