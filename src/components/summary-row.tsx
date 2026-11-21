@@ -5,8 +5,8 @@ type SummaryRowProps = {
 };
 
 export function SummaryRow({ jobs }: SummaryRowProps) {
-  const todoJobs = jobs.filter((j) => j.status === "WAITING" || j.status === "READY" || j.status === "IN_PROGRESS").length;
-  const waitingJobs = jobs.filter((j) => j.status === "WAITING" || j.status === "READY").length;
+  const todoJobs = jobs.filter((j) => j.status === "READY" || j.status === "IN_PROGRESS").length;
+  const waitingJobs = jobs.filter((j) => j.status === "WAITING").length;
   const inProgressJobs = jobs.filter((j) => j.status === "IN_PROGRESS").length;
   const completeJobs = jobs.filter((j) => j.status === "COMPLETE").length;
 
