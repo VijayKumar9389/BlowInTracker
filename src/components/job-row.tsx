@@ -87,7 +87,6 @@ export function JobRow({
 
   const getRowBgClass = () => {
     if (isInProgress) return "bg-progress/5";
-    if (isWaiting) return "bg-waiting/5";
     return "";
   };
 
