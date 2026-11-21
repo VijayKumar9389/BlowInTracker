@@ -139,7 +139,7 @@ export async function createJob(
   }
 
   try {
-    const status = data.status || "READY";
+    const status = data.status || "WAITING";
     await prisma.job.create({
       data: {
         name: data.name.trim(),
