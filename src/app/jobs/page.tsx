@@ -56,7 +56,7 @@ function countJobs(folders: FolderWithRelations[]): Record<FilterType, number> {
     // Count all jobs in this folder
     for (const job of folder.jobs) {
       all++;
-      if (job.status === "WAITING" || job.status === "READY" || job.status === "IN_PROGRESS") {
+      if (job.status === "READY" || job.status === "IN_PROGRESS") {
         todo++;
       }
       if (job.status === "COMPLETE") {
