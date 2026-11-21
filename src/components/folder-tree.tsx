@@ -153,7 +153,7 @@ function countJobsRecursive(folder: FolderWithRelations): {
 function matchesFilter(folder: FolderWithRelations, filter: FilterType): boolean {
   if (filter === "all") return true;
   if (filter === "todo") {
-    return folder.jobs.some(job => job.status === "WAITING" || job.status === "READY" || job.status === "IN_PROGRESS");
+    return folder.jobs.some(job => job.status === "READY" || job.status === "IN_PROGRESS");
   }
   if (filter === "complete") {
     return folder.jobs.some(job => job.status === "COMPLETE");
