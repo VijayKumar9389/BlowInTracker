@@ -35,7 +35,7 @@ model Job {
   name        String
   folderId    String
   folder      Folder    @relation(fields: [folderId], references: [id])
-  status      JobStatus @default(READY)
+  status      JobStatus @default(WAITING)
   rValue      Int?
   bags        Int?
   sqft        Int?
@@ -47,6 +47,7 @@ model Job {
 }
 
 enum JobStatus {
+  WAITING
   READY
   IN_PROGRESS
   COMPLETE

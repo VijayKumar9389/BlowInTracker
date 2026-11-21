@@ -13,6 +13,10 @@ const statusConfig = {
     label: "No job",
     colorClass: "text-muted",
   },
+  WAITING: {
+    label: "Waiting",
+    colorClass: "text-waiting",
+  },
   READY: {
     label: "Ready",
     colorClass: "text-ready",
@@ -35,6 +39,11 @@ export function StatusIcon({ status, showLabel = true, size = "md" }: StatusIcon
     <span className="inline-flex items-center gap-1.5">
       <span className={`${sizeClass} flex items-center justify-center`}>
         {status === "NO_JOB" && (
+          <svg viewBox="0 0 20 20" fill="none" className={`${sizeClass} ${config.colorClass}`}>
+            <circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="2" strokeDasharray="4 3" />
+          </svg>
+        )}
+        {status === "WAITING" && (
           <svg viewBox="0 0 20 20" fill="none" className={`${sizeClass} ${config.colorClass}`}>
             <circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="2" strokeDasharray="4 3" />
           </svg>

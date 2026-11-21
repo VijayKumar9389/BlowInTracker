@@ -38,6 +38,12 @@ function formatDate(date: Date) {
 }
 
 function StatusRing({ status }: { status: JobStatus }) {
+  if (status === "WAITING") {
+    return (
+      <div className="w-4 h-4 rounded-full border-2 border-waiting border-dashed" />
+    );
+  }
+
   if (status === "READY") {
     return (
       <div className="w-4 h-4 rounded-full border-2 border-ready" />
@@ -77,9 +83,11 @@ export function JobRow({
   const isComplete = job.status === "COMPLETE";
   const isInProgress = job.status === "IN_PROGRESS";
   const isReady = job.status === "READY";
+  const isWaiting = job.status === "WAITING";
 
   const getRowBgClass = () => {
     if (isInProgress) return "bg-progress/5";
+    if (isWaiting) return "bg-waiting/5";
     return "";
   };
 
@@ -108,6 +116,9 @@ export function JobRow({
 
   // Mobile second line content
   const getMobileSubtext = () => {
+    if (isWaiting) {
+      return "Waiting";
+    }
     if (isReady) {
       return job.rValue ? `Ready · R${job.rValue}` : "Ready";
     }
@@ -144,6 +155,11 @@ export function JobRow({
 
         {/* Status chip */}
         <div className="w-28 flex-shrink-0 flex items-center">
+          {isWaiting && (
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-waiting/15 text-waiting">
+              Waiting
+            </span>
+          )}
           {isReady && (
             <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-ready/15 text-ready">
               Ready

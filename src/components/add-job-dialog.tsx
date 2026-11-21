@@ -63,7 +63,7 @@ export function AddJobDialog({ open, onClose, folder }: AddJobDialogProps) {
     startTransition(async () => {
       const result = await createJob(folder.id, {
         name: name.trim(),
-        status: "READY",
+        status: "WAITING",
       });
 
       if (result.success) {

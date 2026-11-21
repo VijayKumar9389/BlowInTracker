@@ -29,6 +29,27 @@ export function NextStepButton({
     return null;
   }
 
+  // WAITING - show "Ready" with outline
+  if (status === "WAITING") {
+    return (
+      <button
+        type="button"
+        disabled={isPending}
+        onClick={(e) => {
+          e.stopPropagation();
+          startTransition(async () => {
+            await updateJobStatus(jobId, "READY");
+            onShowUndo(jobId, "WAITING");
+          });
+        }}
+        className="h-9 md:h-9 min-h-11 md:min-h-0 px-4 text-sm font-medium text-ink border border-line rounded-full hover:border-ink disabled:opacity-50 transition-colors"
+        aria-label="Mark job as ready"
+      >
+        {isPending ? "..." : "Ready"}
+      </button>
+    );
+  }
+
   // READY - show "Start" with outline
   if (status === "READY") {
     return (

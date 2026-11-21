@@ -29,7 +29,7 @@ export function JobSheet({
 
   // Form state
   const [name, setName] = useState(job?.name || "");
-  const [status, setStatus] = useState<JobStatus>(job?.status || "READY");
+  const [status, setStatus] = useState<JobStatus>(job?.status || "WAITING");
   const defaultRValue = job?.rValue || lastRValue || null;
   const [rValue, setRValue] = useState<number | "other" | null>(
     defaultRValue ? ([40, 50, 60].includes(defaultRValue) ? defaultRValue : "other") : null
@@ -54,7 +54,7 @@ export function JobSheet({
     if (open) {
       const defaultR = job?.rValue || lastRValue || null;
       setName(job?.name || "");
-      setStatus(job?.status || "READY");
+      setStatus(job?.status || "WAITING");
       setRValue(defaultR ? ([40, 50, 60].includes(defaultR) ? defaultR : "other") : null);
       setCustomRValue(defaultR && ![40, 50, 60].includes(defaultR) ? defaultR.toString() : "");
       setBags(job?.bags || 0);
@@ -133,6 +133,7 @@ export function JobSheet({
   if (!open) return null;
 
   const statusOptions: { value: JobStatus; label: string }[] = [
+    { value: "WAITING", label: "Waiting" },
     { value: "READY", label: "Ready" },
     { value: "IN_PROGRESS", label: "In progress" },
     { value: "COMPLETE", label: "Complete" },

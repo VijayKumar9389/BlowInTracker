@@ -5,7 +5,7 @@ type SummaryRowProps = {
 };
 
 export function SummaryRow({ jobs }: SummaryRowProps) {
-  const todoJobs = jobs.filter((j) => j.status === "READY" || j.status === "IN_PROGRESS").length;
+  const todoJobs = jobs.filter((j) => j.status === "WAITING" || j.status === "READY" || j.status === "IN_PROGRESS").length;
   const completeJobs = jobs.filter((j) => j.status === "COMPLETE").length;
   const totalBags = jobs.reduce((sum, j) => sum + (j.bags || 0), 0);
   const totalSqft = jobs.reduce((sum, j) => sum + (j.sqft || 0), 0);
