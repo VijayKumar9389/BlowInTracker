@@ -6,6 +6,7 @@ import autoTable from "jspdf-autotable";
 import type { FolderWithRelations, FilterType } from "@/lib/types";
 import { RowMenu, RowMenuItem, RowMenuDivider, AddMenu } from "./row-menu";
 import { EditFolderDialog } from "./edit-folder-dialog";
+import { MoveDialog } from "./move-dialog";
 import { UndoToast } from "./undo-toast";
 import {
   createFolder,
@@ -198,6 +199,7 @@ type FolderRowProps = {
   isFirst?: boolean;
   expandedFolders: Set<string>;
   onToggleExpanded: (folderId: string) => void;
+  allFolders: FolderWithRelations[];
 };
 
 function TreeGuides({ depth, isMobile }: { depth: number; isMobile?: boolean }) {
@@ -225,6 +227,7 @@ function FolderRow({
   isFirst = false,
   expandedFolders,
   onToggleExpanded,
+  allFolders,
 }: FolderRowProps) {
   const hasSubfolders = folder.children.length > 0;
   const hasJobs = folder.jobs.length > 0;
@@ -236,6 +239,7 @@ function FolderRow({
 
   const isExpanded = expandedFolders.has(folder.id);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
   const [isAddingUnit, setIsAddingUnit] = useState(false);
   const [isAddJobDialogOpen, setIsAddJobDialogOpen] = useState(false);
   const [unitName, setUnitName] = useState("");
@@ -403,6 +407,12 @@ function FolderRow({
             >
               Edit folder
             </RowMenuItem>
+            <RowMenuItem
+              onClick={() => setIsMoveDialogOpen(true)}
+              icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h8m0 0l-3-3m3 3l-3 3" /></svg>}
+            >
+              Move folder
+            </RowMenuItem>
             <RowMenuDivider />
             <RowMenuItem
               onClick={handleDelete}
@@ -495,6 +505,12 @@ function FolderRow({
             >
               Edit folder
             </RowMenuItem>
+            <RowMenuItem
+              onClick={() => setIsMoveDialogOpen(true)}
+              icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h8m0 0l-3-3m3 3l-3 3" /></svg>}
+            >
+              Move folder
+            </RowMenuItem>
             <RowMenuDivider />
             <RowMenuItem
               onClick={handleDelete}
@@ -559,6 +575,16 @@ function FolderRow({
         folder={folder}
       />
 
+      <MoveDialog
+        open={isMoveDialogOpen}
+        onClose={() => setIsMoveDialogOpen(false)}
+        itemType="folder"
+        itemId={folder.id}
+        itemName={folder.name}
+        currentFolderId={folder.parentId}
+        folders={allFolders}
+      />
+
       {/* Children */}
       {isExpanded && (
         <>
@@ -570,6 +596,7 @@ function FolderRow({
               depth={depth + 1}
               lastRValue={lastRValue}
               onShowUndo={onShowUndo}
+              allFolders={allFolders}
             />
           ))}
           {filteredChildren.map((child) => (
@@ -585,6 +612,7 @@ function FolderRow({
               isTopLevel={false}
               expandedFolders={expandedFolders}
               onToggleExpanded={onToggleExpanded}
+              allFolders={allFolders}
             />
           ))}
         </>
@@ -698,6 +726,7 @@ export function FolderTree({ folders, filter, searchQuery, lastRValue }: FolderT
             isFirst={index === 0}
             expandedFolders={expandedFolders}
             onToggleExpanded={handleToggleExpanded}
+            allFolders={folders}
           />
         ))}
       </div>

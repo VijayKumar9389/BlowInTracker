@@ -3,7 +3,8 @@
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { JobStatus } from "@prisma/client";
+import { JobStatus, Folder } from "@prisma/client";
+import { MAX_FOLDER_DEPTH } from "@/lib/constants";
 
 const folderSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -253,5 +254,124 @@ export async function deleteJob(id: number): Promise<ActionResult> {
     return { success: true };
   } catch {
     return { success: false, error: "Failed to delete job" };
+  }
+}
+
+// Move actions
+
+export async function moveJob(jobId: number, targetFolderId: string): Promise<ActionResult> {
+  try {
+    // Verify target folder exists
+    const targetFolder = await prisma.folder.findUnique({ where: { id: targetFolderId } });
+    if (!targetFolder) {
+      return { success: false, error: "Target folder not found" };
+    }
+
+    await prisma.job.update({
+      where: { id: jobId },
+      data: { folderId: targetFolderId },
+    });
+    revalidatePath("/jobs");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Failed to move job" };
+  }
+}
+
+// Helper: Get depth of a folder (0 = root level)
+async function getFolderDepth(folderId: string): Promise<number> {
+  let depth = 0;
+  let currentId: string | null = folderId;
+
+  while (currentId) {
+    const result: { parentId: string | null } | null = await prisma.folder.findUnique({
+      where: { id: currentId },
+      select: { parentId: true }
+    });
+    if (!result || !result.parentId) break;
+    currentId = result.parentId;
+    depth++;
+  }
+  return depth;
+}
+
+// Helper type for recursive folder structure
+type FolderWithChildren = Folder & {
+  children: FolderWithChildren[];
+};
+
+// Helper: Get max depth of children within a folder
+function getSubtreeDepth(folder: FolderWithChildren): number {
+  if (!folder.children || folder.children.length === 0) return 0;
+  return 1 + Math.max(...folder.children.map(getSubtreeDepth));
+}
+
+// Helper: Check if potentialDescendant is inside potentialAncestor
+async function isDescendantOf(potentialDescendantId: string, potentialAncestorId: string): Promise<boolean> {
+  let currentId: string | null = potentialDescendantId;
+
+  while (currentId) {
+    if (currentId === potentialAncestorId) return true;
+    const result: { parentId: string | null } | null = await prisma.folder.findUnique({
+      where: { id: currentId },
+      select: { parentId: true }
+    });
+    currentId = result?.parentId ?? null;
+  }
+  return false;
+}
+
+export async function moveFolder(folderId: string, targetFolderId: string | null): Promise<ActionResult> {
+  try {
+    // 1. Can't move to itself
+    if (folderId === targetFolderId) {
+      return { success: false, error: "Cannot move folder into itself" };
+    }
+
+    // 2. Get folder being moved with its subtree depth
+    const folder = await prisma.folder.findUnique({
+      where: { id: folderId },
+      include: {
+        children: {
+          include: {
+            children: {
+              include: {
+                children: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!folder) {
+      return { success: false, error: "Folder not found" };
+    }
+
+    // 3. Calculate subtree depth of folder being moved
+    const subtreeDepth = getSubtreeDepth(folder as FolderWithChildren);
+
+    // 4. Calculate target depth (-1 for root, so +1 gives 0)
+    const targetDepth = targetFolderId ? await getFolderDepth(targetFolderId) : -1;
+
+    // 5. Check if move would exceed MAX_FOLDER_DEPTH
+    if (targetDepth + 1 + subtreeDepth > MAX_FOLDER_DEPTH) {
+      return { success: false, error: "Move would exceed maximum folder depth" };
+    }
+
+    // 6. If target is not null, check it's not a descendant of folder being moved
+    if (targetFolderId && await isDescendantOf(targetFolderId, folderId)) {
+      return { success: false, error: "Cannot move folder into its own subfolder" };
+    }
+
+    // 7. Perform move
+    await prisma.folder.update({
+      where: { id: folderId },
+      data: { parentId: targetFolderId },
+    });
+    revalidatePath("/jobs");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Failed to move folder" };
   }
 }

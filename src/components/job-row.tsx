@@ -3,10 +3,12 @@
 import { useState, useTransition } from "react";
 import type { Job, Folder } from "@prisma/client";
 import { JobStatus } from "@prisma/client";
+import type { FolderWithRelations } from "@/lib/types";
 import { NextStepButton } from "./next-step-button";
 import { RowMenu, RowMenuItem, RowMenuDivider } from "./row-menu";
 import { JobSheet } from "./job-sheet";
 import { JobViewSheet } from "./job-view-sheet";
+import { MoveDialog } from "./move-dialog";
 import { deleteJob } from "@/app/jobs/actions";
 
 type JobRowProps = {
@@ -15,6 +17,7 @@ type JobRowProps = {
   depth: number;
   lastRValue: number | null;
   onShowUndo: (jobId: number, previousStatus: JobStatus) => void;
+  allFolders: FolderWithRelations[];
 };
 
 function TreeGuides({ depth, isMobile }: { depth: number; isMobile?: boolean }) {
@@ -74,9 +77,11 @@ export function JobRow({
   depth,
   lastRValue,
   onShowUndo,
+  allFolders,
 }: JobRowProps) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isViewSheetOpen, setIsViewSheetOpen] = useState(false);
+  const [isMoveDialogOpen, setIsMoveDialogOpen] = useState(false);
   const [sheetMode, setSheetMode] = useState<"edit" | "complete">("edit");
   const [isPending, startTransition] = useTransition();
 
@@ -221,6 +226,12 @@ export function JobRow({
             >
               Edit job
             </RowMenuItem>
+            <RowMenuItem
+              onClick={() => setIsMoveDialogOpen(true)}
+              icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h8m0 0l-3-3m3 3l-3 3" /></svg>}
+            >
+              Move job
+            </RowMenuItem>
             <RowMenuDivider />
             <RowMenuItem
               onClick={handleDeleteJob}
@@ -288,6 +299,12 @@ export function JobRow({
             >
               Edit job
             </RowMenuItem>
+            <RowMenuItem
+              onClick={() => setIsMoveDialogOpen(true)}
+              icon={<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h8m0 0l-3-3m3 3l-3 3" /></svg>}
+            >
+              Move job
+            </RowMenuItem>
             <RowMenuDivider />
             <RowMenuItem
               onClick={handleDeleteJob}
@@ -316,6 +333,17 @@ export function JobRow({
         onClose={() => setIsViewSheetOpen(false)}
         folder={folder}
         job={job}
+      />
+
+      {/* Move Dialog */}
+      <MoveDialog
+        open={isMoveDialogOpen}
+        onClose={() => setIsMoveDialogOpen(false)}
+        itemType="job"
+        itemId={job.id}
+        itemName={job.name}
+        currentFolderId={job.folderId}
+        folders={allFolders}
       />
     </>
   );
