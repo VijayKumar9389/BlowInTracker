@@ -624,66 +624,46 @@ function FolderRow({
 export function FolderTree({ folders, filter, searchQuery, lastRValue }: FolderTreeProps) {
   const [undoState, setUndoState] = useState<UndoState>(null);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
-  const [isHydrated, setIsHydrated] = useState(false);
 
-  // Load from localStorage after hydration
-  useEffect(() => {
-    const saved = localStorage.getItem("expandedFolders");
-    if (saved) {
-      try {
-        setExpandedFolders(new Set(JSON.parse(saved)));
-      } catch {
-        // ignore
+  // Helper to collect all descendant folder IDs
+  const getDescendantIds = useCallback((folderId: string): Set<string> => {
+    const descendants = new Set<string>();
+
+    function findFolder(folders: FolderWithRelations[]): FolderWithRelations | null {
+      for (const f of folders) {
+        if (f.id === folderId) return f;
+        const found = findFolder(f.children);
+        if (found) return found;
       }
-    }
-    setIsHydrated(true);
-  }, []);
-
-  // Initialize: collapse folders where all jobs are complete
-  useEffect(() => {
-    if (!isHydrated) return;
-
-    const allCompleteIds = new Set<string>();
-
-    function checkFolder(folder: FolderWithRelations) {
-      const { total, complete } = countJobsRecursive(folder);
-      if (total > 0 && total === complete) {
-        allCompleteIds.add(folder.id);
-      }
-      folder.children.forEach(checkFolder);
+      return null;
     }
 
-    folders.forEach(checkFolder);
+    function collectIds(folder: FolderWithRelations) {
+      for (const child of folder.children) {
+        descendants.add(child.id);
+        collectIds(child);
+      }
+    }
 
-    // On first load, collapse all-complete folders (unless user has explicitly expanded them)
-    setExpandedFolders((prev) => {
-      const newSet = new Set(prev);
-      allCompleteIds.forEach((id) => {
-        if (!prev.has(id)) {
-          // Don't add it - leave collapsed
-        }
-      });
-      return newSet;
-    });
-  }, [folders, isHydrated]);
-
-  // Save to localStorage when expanded folders change (only after hydration)
-  useEffect(() => {
-    if (!isHydrated) return;
-    localStorage.setItem("expandedFolders", JSON.stringify([...expandedFolders]));
-  }, [expandedFolders, isHydrated]);
+    const folder = findFolder(folders);
+    if (folder) collectIds(folder);
+    return descendants;
+  }, [folders]);
 
   const handleToggleExpanded = useCallback((folderId: string) => {
     setExpandedFolders((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(folderId)) {
+        // Collapsing - also collapse all descendants
         newSet.delete(folderId);
+        const descendantIds = getDescendantIds(folderId);
+        descendantIds.forEach(id => newSet.delete(id));
       } else {
         newSet.add(folderId);
       }
       return newSet;
     });
-  }, []);
+  }, [getDescendantIds]);
 
   const handleShowUndo = useCallback((jobId: number, previousStatus: JobStatus) => {
     setUndoState({ jobId, previousStatus });
