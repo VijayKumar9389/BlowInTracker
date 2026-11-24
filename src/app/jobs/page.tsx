@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { JobsPageClient } from "./client";
-import type { FolderWithRelations, FilterType } from "@/lib/types";
+import type { FolderWithRelations } from "@/lib/types";
 import type { Job } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -47,30 +47,6 @@ function getAllJobs(folders: FolderWithRelations[]): Job[] {
   return jobs;
 }
 
-function countJobs(folders: FolderWithRelations[]): Record<FilterType, number> {
-  let todo = 0;
-  let complete = 0;
-  let all = 0;
-
-  function count(folder: FolderWithRelations) {
-    // Count all jobs in this folder
-    for (const job of folder.jobs) {
-      all++;
-      if (job.status === "READY" || job.status === "IN_PROGRESS") {
-        todo++;
-      }
-      if (job.status === "COMPLETE") {
-        complete++;
-      }
-    }
-    // Recurse into children
-    folder.children.forEach(count);
-  }
-
-  folders.forEach(count);
-  return { todo, complete, all };
-}
-
 function getLastRValue(jobs: Job[]): number | null {
   // Get the most recently updated job with an rValue
   const jobsWithRValue = jobs
@@ -83,14 +59,12 @@ function getLastRValue(jobs: Job[]): number | null {
 export default async function JobsPage() {
   const folders = await getFoldersWithJobs();
   const jobs = getAllJobs(folders);
-  const counts = countJobs(folders);
   const lastRValue = getLastRValue(jobs);
 
   return (
     <JobsPageClient
       folders={folders}
       jobs={jobs}
-      counts={counts}
       lastRValue={lastRValue}
     />
   );

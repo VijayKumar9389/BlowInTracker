@@ -7,4 +7,4 @@ export type FolderWithRelations = Folder & {
   jobs: Job[];
 };
 
-export type FilterType = "todo" | "complete" | "all";
+export type FilterType = "all" | "waiting" | "ready" | "in_progress" | "complete";

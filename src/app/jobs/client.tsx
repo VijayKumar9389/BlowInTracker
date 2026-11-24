@@ -4,7 +4,6 @@ import { useState } from "react";
 import type { FolderWithRelations, FilterType, Job } from "@/lib/types";
 import { FolderTree } from "@/components/folder-tree";
 import { SummaryRow } from "@/components/summary-row";
-import { FilterTabs } from "@/components/filter-tabs";
 import { SearchInput } from "@/components/search-input";
 import { Header } from "@/components/header";
 import { AddFolderDialog } from "@/components/add-folder-dialog";
@@ -12,14 +11,12 @@ import { AddFolderDialog } from "@/components/add-folder-dialog";
 type JobsPageClientProps = {
   folders: FolderWithRelations[];
   jobs: Job[];
-  counts: Record<FilterType, number>;
   lastRValue: number | null;
 };
 
 export function JobsPageClient({
   folders,
   jobs,
-  counts,
   lastRValue,
 }: JobsPageClientProps) {
   const [filter, setFilter] = useState<FilterType>("all");
@@ -45,16 +42,15 @@ export function JobsPageClient({
           </button>
         </div>
 
-        {/* Summary strip */}
-        <SummaryRow jobs={jobs} />
+        {/* Summary with filters */}
+        <SummaryRow jobs={jobs} filter={filter} onFilterChange={setFilter} />
 
-        {/* Search and filter row */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+        {/* Search */}
+        <div className="mb-6">
           <SearchInput
             value={searchQuery}
             onChange={setSearchQuery}
           />
-          <FilterTabs value={filter} onChange={setFilter} counts={counts} />
         </div>
 
         {/* Tree container */}
