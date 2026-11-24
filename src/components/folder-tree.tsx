@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useCallback, useEffect } from "react";
+import { useState, useTransition, useCallback, useEffect, useRef } from "react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import type { FolderWithRelations, FilterType } from "@/lib/types";
@@ -671,14 +671,20 @@ export function FolderTree({ folders, filter, searchQuery, lastRValue }: FolderT
     return descendants;
   }, [folders]);
 
-  // Expand/collapse all based on filter
+  // Track previous filter to only expand/collapse when filter changes
+  const prevFilterRef = useRef<FilterType>(filter);
+
+  // Expand/collapse all based on filter (only when filter changes)
   useEffect(() => {
-    if (filter === "all") {
-      // Collapse all folders
-      setExpandedFolders(new Set());
-    } else {
-      // Expand all folders
-      setExpandedFolders(getAllFolderIds());
+    if (prevFilterRef.current !== filter) {
+      prevFilterRef.current = filter;
+      if (filter === "all") {
+        // Collapse all folders
+        setExpandedFolders(new Set());
+      } else {
+        // Expand all folders
+        setExpandedFolders(getAllFolderIds());
+      }
     }
   }, [filter, getAllFolderIds]);
 
