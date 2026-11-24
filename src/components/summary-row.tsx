@@ -5,6 +5,7 @@ type SummaryRowProps = {
 };
 
 export function SummaryRow({ jobs }: SummaryRowProps) {
+  const totalJobs = jobs.length;
   const todoJobs = jobs.filter((j) => j.status === "READY" || j.status === "IN_PROGRESS").length;
   const waitingJobs = jobs.filter((j) => j.status === "WAITING").length;
   const inProgressJobs = jobs.filter((j) => j.status === "IN_PROGRESS").length;
@@ -12,7 +13,15 @@ export function SummaryRow({ jobs }: SummaryRowProps) {
 
   return (
     <div className="border border-line rounded-2xl mb-6 overflow-hidden">
-      <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-line">
+      <div className="grid grid-cols-3 md:grid-cols-5 divide-x divide-line">
+        {/* Total */}
+        <div className="p-4 text-center">
+          <div className="text-2xl font-semibold text-ink tabular-nums">
+            {totalJobs || "—"}
+          </div>
+          <div className="text-xs text-muted mt-1">Total</div>
+        </div>
+
         {/* Waiting */}
         <div className="p-4 text-center">
           <div className="text-2xl font-semibold text-ink tabular-nums">
