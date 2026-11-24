@@ -631,12 +631,27 @@ export function FolderTree({ folders, filter, searchQuery, lastRValue }: FolderT
   const [undoState, setUndoState] = useState<UndoState>(null);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
 
+  // Helper to collect all folder IDs in the tree
+  const getAllFolderIds = useCallback((): Set<string> => {
+    const allIds = new Set<string>();
+
+    function collectIds(folderList: FolderWithRelations[]) {
+      for (const folder of folderList) {
+        allIds.add(folder.id);
+        collectIds(folder.children);
+      }
+    }
+
+    collectIds(folders);
+    return allIds;
+  }, [folders]);
+
   // Helper to collect all descendant folder IDs
   const getDescendantIds = useCallback((folderId: string): Set<string> => {
     const descendants = new Set<string>();
 
-    function findFolder(folders: FolderWithRelations[]): FolderWithRelations | null {
-      for (const f of folders) {
+    function findFolder(folderList: FolderWithRelations[]): FolderWithRelations | null {
+      for (const f of folderList) {
         if (f.id === folderId) return f;
         const found = findFolder(f.children);
         if (found) return found;
@@ -655,6 +670,17 @@ export function FolderTree({ folders, filter, searchQuery, lastRValue }: FolderT
     if (folder) collectIds(folder);
     return descendants;
   }, [folders]);
+
+  // Expand/collapse all based on filter
+  useEffect(() => {
+    if (filter === "all") {
+      // Collapse all folders
+      setExpandedFolders(new Set());
+    } else {
+      // Expand all folders
+      setExpandedFolders(getAllFolderIds());
+    }
+  }, [filter, getAllFolderIds]);
 
   const handleToggleExpanded = useCallback((folderId: string) => {
     setExpandedFolders((prev) => {
